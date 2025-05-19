@@ -1,3 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyColloc</string>
+
+    <!-- Auth -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="create_account">Create an account</string>
+    <string name="forgot_password">Forgot password?</string>
+
+    <!-- Home -->
+    <string name="list_view">List</string>
+    <string name="map_view">Map</string>
+    <string name="add_offer">Add Offer</string>
+    <string name="search_radius">Search Radius</string>
+    <string name="kilometers">%1$d km</string>
+    <string name="no_offers">No offers available</string>
+
+    <!-- Offer Details -->
+    <string name="make_offer">Make an offer</string>
+    <string name="contact_owner">Contact Owner</string>
+    <string name="price">Price</string>
+    <string name="location">Location</string>
+    <string name="description">Description</string>
+    <string name="posted_by">Posted by %1$s</string>
+
+    <!-- Post Offer -->
+    <string name="post_new_offer">Post New Offer</string>
+    <string name="title">Title</string>
+    <string name="enter_title">Enter offer title</string>
+    <string name="enter_description">Enter offer description</string>
+    <string name="enter_price">Enter price</string>
+    <string name="select_location">Select Location</string>
+    <string name="add_photos">Add Photos</string>
+    <string name="post">Post</string>
+
+    <!-- Negotiation -->
+    <string name="your_offer">Your Offer</string>
+    <string name="enter_amount">Enter amount</string>
+    <string name="message">Message</string>
+    <string name="enter_message">Enter your message</string>
+    <string name="submit_offer">Submit Offer</string>
+    <string name="offer_sent">Offer sent successfully</string>
+
+    <!-- Admin -->
+    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="manage_users">Manage Users</string>
+    <string name="manage_offers">Manage Offers</string>
+    <string name="reports">Reports</string>
+
+    <!-- Errors -->
+    <string name="error_required">This field is required</string>
+    <string name="error_invalid_email">Invalid email address</string>
+    <string name="error_invalid_password">Password must be at least 6 characters</string>
+    <string name="error_location_required">Location is required</string>
+    <string name="error_image_required">At least one image is required</string>
+    <string name="error_network">Network error. Please try again.</string>
+    <string name="error_unknown">An unknown error occurred</string>
+
+    <!-- Permissions -->
+    <string name="permission_location_required">Location permission is required to show nearby offers</string>
+    <string name="permission_storage_required">Storage permission is required to upload images</string>
 </resources>

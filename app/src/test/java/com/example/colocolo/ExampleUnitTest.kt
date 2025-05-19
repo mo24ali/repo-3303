@@ -1,4 +1,4 @@
-package com.example.mycolloc
+package com.example.colocolo
 
 import org.junit.Test
 

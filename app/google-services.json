@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "191958565594",
+    "project_id": "mycolloc-51241",
+    "storage_bucket": "mycolloc-51241.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191958565594:android:46d93dea2ec9c9f2e39be3",
+        "android_client_info": {
+          "package_name": "com.example.mycolloc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJOY5aSfoHEN7zohet0a074vaIiiohRqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

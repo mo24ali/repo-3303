@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.mycolloc">
 
     <!-- Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,12 +13,13 @@
         android:maxSdkVersion="28" />
 
     <application
+        android:name=".MyCollocApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyColloc">
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- Google Maps API Key -->
         <meta-data

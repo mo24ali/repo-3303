@@ -3,10 +3,10 @@ package com.example.mycolloc.model
 data class User(
     val id: String = "",
     val email: String = "",
-    val displayName: String = "",
-    val role: UserRole = UserRole.USER,
+    val firstName: String = "",
+    val lastName: String = "",
     val phoneNumber: String = "",
-    val profileImageUrl: String = "",
+    val role: UserRole = UserRole.USER,
     val createdAt: Long = System.currentTimeMillis()
 )
 

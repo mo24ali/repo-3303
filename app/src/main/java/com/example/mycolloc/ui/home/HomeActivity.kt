@@ -20,8 +20,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
-    private val homeViewModel: HomeViewModel by viewModels()
     private val authViewModel: AuthViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var viewPagerAdapter: HomeViewPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +29,6 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
         setupViewPager()
         setupObservers()
         setupClickListeners()
@@ -59,20 +58,32 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        homeViewModel.uiState.observe(this) { state ->
-            when (state) {
-                is HomeUiState.Loading -> showLoading(true)
-                is HomeUiState.Success -> showLoading(false)
-                is HomeUiState.Error -> {
-                    showLoading(false)
-                    showError(state.message)
-                }
+        // Observe authentication state
+        authViewModel.currentUser.observe(this) { user ->
+            if (user == null) {
+                // User is not logged in, navigate to login screen
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
             }
         }
 
-        authViewModel.currentUser.observe(this) { user ->
-            // Update UI based on user role
-            invalidateOptionsMenu()
+        // Observe home state
+        homeViewModel.uiState.observe(this) { state ->
+            when (state) {
+                is HomeUiState.Loading -> {
+                    showLoading(true)
+                    binding.fabAddOffer.isEnabled = false
+                }
+                is HomeUiState.Success -> {
+                    showLoading(false)
+                    binding.fabAddOffer.isEnabled = true
+                }
+                is HomeUiState.Error -> {
+                    showLoading(false)
+                    binding.fabAddOffer.isEnabled = true
+                    showError(state.message)
+                }
+            }
         }
     }
 
@@ -84,26 +95,21 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_home, menu)
-
-        // Show admin menu items only for admin users
-        menu.findItem(R.id.action_admin_dashboard)?.isVisible = homeViewModel.isUserAdmin()
-
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_logout -> {
-                authViewModel.signOut()
-                navigateToLogin()
-                true
-            }
-            R.id.action_admin_dashboard -> {
-                // TODO: Navigate to admin dashboard
+                logout()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun logout() {
+        authViewModel.signOut()
     }
 
     private fun showLoading(show: Boolean) {
@@ -112,10 +118,5 @@ class HomeActivity : AppCompatActivity() {
 
     private fun showError(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-    }
-
-    private fun navigateToLogin() {
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
     }
 } 

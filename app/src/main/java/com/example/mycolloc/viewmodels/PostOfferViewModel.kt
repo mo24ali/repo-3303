@@ -22,14 +22,15 @@ class PostOfferViewModel : ViewModel() {
         price: Double,
         location: Location
     ) {
-        if (title.isBlank() || description.isBlank() || price <= 0) {
-            _uiState.value = PostOfferUiState.Error("Please fill in all required fields")
-            return
-        }
-
         viewModelScope.launch {
             _uiState.value = PostOfferUiState.Loading
             
+            // Validate input
+            if (title.isBlank() || description.isBlank() || price <= 0) {
+                _uiState.value = PostOfferUiState.Error("Please fill all required fields")
+                return@launch
+            }
+
             val offer = Offer(
                 title = title,
                 description = description,
@@ -37,12 +38,16 @@ class PostOfferViewModel : ViewModel() {
                 location = location
             )
 
-            when (val result: Result<String> = repository.createOffer(offer)) {
+            when (val result = repository.createOffer(offer)) {
                 is Result.Success -> {
                     _uiState.value = PostOfferUiState.Success(result.data)
                 }
                 is Result.Error -> {
                     _uiState.value = PostOfferUiState.Error(result.exception.message ?: "Failed to create offer")
+                }
+                is Result.RecaptchaRequired -> {
+                    // Since this is just creating an offer, reCAPTCHA shouldn't be required
+                    _uiState.value = PostOfferUiState.Error("Unexpected reCAPTCHA requirement")
                 }
             }
         }

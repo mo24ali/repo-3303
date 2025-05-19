@@ -12,10 +12,13 @@ import com.example.mycolloc.ui.home.HomeActivity
 import com.example.mycolloc.viewmodels.AuthState
 import com.example.mycolloc.viewmodels.AuthViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: AuthViewModel by viewModels()
+    private val auth = Firebase.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +35,12 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.passwordEditText.text.toString()
 
             if (validateInput(email, password)) {
-                viewModel.signIn(email, password)
+                viewModel.signIn(email, password, this)
             }
         }
 
         binding.registerButton.setOnClickListener {
-            // TODO: Implement registration
-            Toast.makeText(this, "Registration coming soon!", Toast.LENGTH_SHORT).show()
+            RegisterDialog().show(supportFragmentManager, "register_dialog")
         }
     }
 
@@ -53,6 +55,25 @@ class LoginActivity : AppCompatActivity() {
                 is AuthState.Error -> {
                     showLoading(false)
                     showError(state.message)
+                }
+                is AuthState.RecaptchaRequired -> {
+                    showLoading(false)
+                    // Trigger reCAPTCHA verification
+                    auth.signInWithEmailAndPassword(
+                        binding.emailEditText.text.toString(),
+                        binding.passwordEditText.text.toString()
+                    ).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // ReCAPTCHA verification succeeded, try sign in again
+                            viewModel.signIn(
+                                binding.emailEditText.text.toString(),
+                                binding.passwordEditText.text.toString(),
+                                this
+                            )
+                        } else {
+                            showError("Please complete the reCAPTCHA verification")
+                        }
+                    }
                 }
                 is AuthState.Unauthenticated -> showLoading(false)
             }

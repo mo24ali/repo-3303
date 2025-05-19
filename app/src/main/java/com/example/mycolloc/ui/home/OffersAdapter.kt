@@ -33,7 +33,7 @@ class OffersAdapter(
 
         init {
             binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
+                val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     onOfferClick(getItem(position))
                 }

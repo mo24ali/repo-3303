@@ -61,17 +61,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-
         }
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-        force("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-        force("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-        force("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-        force("androidx.lifecycle:lifecycle-common:2.6.1")
     }
 }
 

@@ -41,16 +41,20 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun loadOffers() {
+    private fun loadOffers() {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
-            when (val result: Result<List<Offer>> = repository.getOffers()) {
+            when (val result = repository.getOffers()) {
                 is Result.Success -> {
                     _offers.value = result.data
                     _uiState.value = HomeUiState.Success
                 }
                 is Result.Error -> {
                     _uiState.value = HomeUiState.Error(result.exception.message ?: "Failed to load offers")
+                }
+                is Result.RecaptchaRequired -> {
+                    // Since this is just loading offers, reCAPTCHA shouldn't be required
+                    _uiState.value = HomeUiState.Error("Unexpected reCAPTCHA requirement")
                 }
             }
         }
@@ -59,20 +63,38 @@ class HomeViewModel : ViewModel() {
     fun createOffer(offer: Offer) {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
-            when (val result: Result<String> = repository.createOffer(offer)) {
+            when (val result = repository.createOffer(offer)) {
                 is Result.Success -> {
-                    loadOffers() // Reload the offers list
-                    _uiState.value = HomeUiState.Success
+                    loadOffers() // Reload offers after creating a new one
                 }
                 is Result.Error -> {
                     _uiState.value = HomeUiState.Error(result.exception.message ?: "Failed to create offer")
+                }
+                is Result.RecaptchaRequired -> {
+                    // Since this is just creating an offer, reCAPTCHA shouldn't be required
+                    _uiState.value = HomeUiState.Error("Unexpected reCAPTCHA requirement")
                 }
             }
         }
     }
 
     fun refreshOffers() {
-        loadOffers()
+        viewModelScope.launch {
+            _uiState.value = HomeUiState.Loading
+            when (val result = repository.getOffers()) {
+                is Result.Success -> {
+                    _offers.value = result.data
+                    _uiState.value = HomeUiState.Success
+                }
+                is Result.Error -> {
+                    _uiState.value = HomeUiState.Error(result.exception.message ?: "Failed to refresh offers")
+                }
+                is Result.RecaptchaRequired -> {
+                    // Since this is just refreshing offers, reCAPTCHA shouldn't be required
+                    _uiState.value = HomeUiState.Error("Unexpected reCAPTCHA requirement")
+                }
+            }
+        }
     }
 
     fun loadNearbyOffers(latitude: Double, longitude: Double, radiusInKm: Double = 5.0) {
@@ -88,24 +110,24 @@ class HomeViewModel : ViewModel() {
     fun deleteOffer(offerId: String) {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
-            repository.deleteOffer(offerId)
-                .onSuccess {
+            when (val result: Result<Unit> = repository.deleteOffer(offerId)) {
+                is Result.Success -> {
                     // Refresh the offers list
                     loadOffers()
+                    _uiState.value = HomeUiState.Success
                 }
-                .onFailure { error ->
-                    _uiState.value = HomeUiState.Error(error.message ?: "Failed to delete offer")
+                is Result.Error -> {
+                    _uiState.value = HomeUiState.Error(result.exception.message ?: "Failed to delete offer")
                 }
+
+                else -> {
+
+                }
+            }
         }
     }
 
     fun isUserAdmin(): Boolean {
         return _currentUser.value?.role == UserRole.ADMIN
     }
-}
-
-sealed class HomeUiState {
-    object Loading : HomeUiState()
-    object Success : HomeUiState()
-    data class Error(val message: String) : HomeUiState()
 } 

@@ -27,7 +27,8 @@ class PostOfferViewModel : ViewModel() {
         description: String,
         price: Double,
         category: String,
-        location: Location
+        location: Location,
+        images: List<String>
     ) {
         viewModelScope.launch {
             _uiState.value = PostOfferUiState.Loading

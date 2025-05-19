@@ -4,25 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.mycolloc.data.local.entity.Offer
 
-@Database(entities = [PostImage::class], version = 1)
+@Database(entities = [Offer::class], version = 1)
+@TypeConverters(Converters::class) // ✅ Ajout ici
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun postImageDao(): PostImageDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "mycolloc_database"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
+    abstract fun offerDao(): OfferDao
 }
+

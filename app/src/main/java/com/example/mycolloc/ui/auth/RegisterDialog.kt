@@ -13,11 +13,19 @@ import com.example.mycolloc.databinding.DialogRegisterBinding
 import com.example.mycolloc.viewmodels.AuthViewModel
 import com.example.mycolloc.viewmodels.AuthState
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
+import android.location.Location
 
 class RegisterDialog : DialogFragment() {
     private var _binding: DialogRegisterBinding? = null
     private val binding get() = _binding!!
     private val viewModel: AuthViewModel by activityViewModels()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return Dialog(requireContext(), R.style.Theme_ColoColo_Dialog).apply {
@@ -38,6 +46,8 @@ class RegisterDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
         observeAuthState()
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
     }
 
     private fun setupClickListeners() {
@@ -47,9 +57,22 @@ class RegisterDialog : DialogFragment() {
                 val password = binding.passwordInput.editText?.text.toString()
                 val name = binding.nameInput.editText?.text.toString()
                 val phone = binding.phoneInput.editText?.text.toString()
-                viewModel.register(email, password, name, phone)
+
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED) {
+
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                        val latitude = location?.latitude ?: 0.0
+                        val longitude = location?.longitude ?: 0.0
+                        viewModel.register(email, password, name, phone, latitude, longitude)
+                    }
+
+                } else {
+                    requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1002)
+                }
             }
         }
+
     }
 
     private fun observeAuthState() {

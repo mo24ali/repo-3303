@@ -82,7 +82,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun register(email: String, password: String, name: String, phone: String) {
+    fun register(email: String, password: String, name: String, phone: String, latitude: Double, longitude: Double) {
         if (!validateRegistrationInput(email, password, name, phone)) return
 
         viewModelScope.launch {
@@ -93,13 +93,15 @@ class AuthViewModel : ViewModel() {
                     val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                     val userId = authResult.user?.uid ?: throw IllegalStateException("User ID is null")
 
-                    // Create user document in Firestore
+                    // Create user document in Firestore (avec localisation)
                     val user = User(
                         id = userId,
                         email = email,
                         firstName = name.split(" ").firstOrNull() ?: name,
                         lastName = name.split(" ").drop(1).joinToString(" "),
-                        phoneNumber = phone
+                        phoneNumber = phone,
+                        latitude = latitude,
+                        longitude = longitude
                     )
                     repository.createUser(user)
                 }
@@ -109,6 +111,7 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
 
     fun signOut() {
         viewModelScope.launch {

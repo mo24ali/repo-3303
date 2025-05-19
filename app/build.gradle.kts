@@ -79,6 +79,7 @@ dependencies {
     val lifecycleVersion = "2.7.0"
     val navVersion = "2.7.6"
     val roomVersion = "2.6.1"
+    implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
 
     // Core Android
     implementation("androidx.core:core-ktx:1.12.0")

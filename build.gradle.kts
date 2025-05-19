@@ -3,6 +3,8 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io") // ✅ pour chip-navigation-bar
+
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.2.2")

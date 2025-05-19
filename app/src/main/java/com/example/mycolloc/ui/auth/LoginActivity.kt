@@ -37,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.registerButton.setOnClickListener {
-            // TODO: Implement registration
             Toast.makeText(this, "Registration coming soon!", Toast.LENGTH_SHORT).show()
         }
     }

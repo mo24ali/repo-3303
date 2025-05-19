@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary brand colors -->
-    <color name="primary">#2196F3</color>
+    <color name="primary">#4C8BF7</color>
     <color name="primary_dark">#1976D2</color>
     <color name="primary_light">#BBDEFB</color>
     <color name="accent">#FF4081</color>
@@ -29,6 +29,7 @@
     <!-- Standard colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="whitesp">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
 
     <color name="purple_200">#FFBB86FC</color>

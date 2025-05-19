@@ -2,87 +2,79 @@ package com.example.mycolloc.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
-import com.example.mycolloc.R
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.mycolloc.databinding.ActivityHomeBinding
-import com.example.mycolloc.ui.auth.LoginActivity
+import com.example.mycolloc.repository.FirebaseRepository
 import com.example.mycolloc.ui.post.PostOfferActivity
+import com.example.mycolloc.viewmodels.AuthState
 import com.example.mycolloc.viewmodels.AuthViewModel
-import com.example.mycolloc.viewmodels.HomeViewModel
 import com.example.mycolloc.viewmodels.HomeUiState
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayoutMediator
+import com.example.mycolloc.viewmodels.HomeViewModel
+import com.example.mycolloc.viewmodels.HomeViewModelFactory
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
-    private val authViewModel: AuthViewModel by viewModels()
-    private val homeViewModel: HomeViewModel by viewModels()
-    private lateinit var viewPagerAdapter: HomeViewPagerAdapter
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewPager()
+        setSupportActionBar(binding.toolbar)
+        initViewModels()
+        setupNavigation()
         setupObservers()
         setupClickListeners()
     }
 
-    private fun setupViewPager() {
-        viewPagerAdapter = HomeViewPagerAdapter(this)
-        binding.viewPager.adapter = viewPagerAdapter
+    private fun initViewModels() {
+        val repository = FirebaseRepository()
+        val factory = HomeViewModelFactory(repository)
+        homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
+        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+    }
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "List"
-                1 -> "Map"
-                else -> null
-            }
-        }.attach()
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(com.example.mycolloc.R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                if (position == 1) { // Map tab
-                    // Request location updates when map tab is selected
-                    (viewPagerAdapter.getFragment(1) as? MapFragment)?.requestLocationUpdates()
-                }
+        binding.bottomNav.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.fabAddOffer.visibility = when (destination.id) {
+                com.example.mycolloc.R.id.navigation_home -> View.VISIBLE
+                else -> View.GONE
             }
-        })
+        }
     }
 
     private fun setupObservers() {
-        // Observe authentication state
-        authViewModel.currentUser.observe(this) { user ->
-            if (user == null) {
-                // User is not logged in, navigate to login screen
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-        }
-
-        // Observe home state
         homeViewModel.uiState.observe(this) { state ->
             when (state) {
                 is HomeUiState.Loading -> {
-                    showLoading(true)
-                    binding.fabAddOffer.isEnabled = false
+                    binding.progressBar.visibility = View.VISIBLE
                 }
                 is HomeUiState.Success -> {
-                    showLoading(false)
-                    binding.fabAddOffer.isEnabled = true
+                    binding.progressBar.visibility = View.GONE
                 }
                 is HomeUiState.Error -> {
-                    showLoading(false)
-                    binding.fabAddOffer.isEnabled = true
+                    binding.progressBar.visibility = View.GONE
                     showError(state.message)
                 }
+            }
+        }
+
+        authViewModel.authState.observe(this) { state ->
+            if (state is AuthState.SignedOut) {
+                finish()
             }
         }
     }
@@ -93,30 +85,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_home, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_logout -> {
-                logout()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun logout() {
-        authViewModel.signOut()
-    }
-
-    private fun showLoading(show: Boolean) {
-        binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
     private fun showError(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
-} 
+}

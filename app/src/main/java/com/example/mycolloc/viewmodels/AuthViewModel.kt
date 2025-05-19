@@ -7,151 +7,105 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycolloc.model.User
 import com.example.mycolloc.repository.FirebaseRepository
-import com.example.mycolloc.repository.Result
-import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class AuthViewModel : ViewModel() {
+    private val auth: FirebaseAuth = Firebase.auth
     private val repository = FirebaseRepository()
-    private val auth = Firebase.auth
+
+    private val _authState = MutableLiveData<AuthState>(AuthState.Unauthenticated)
+    val authState: LiveData<AuthState> = _authState
 
     private val _currentUser = MutableLiveData<User?>()
     val currentUser: LiveData<User?> = _currentUser
 
-    private val _authState = MutableLiveData<AuthState>()
-    val authState: LiveData<AuthState> = _authState
-
     init {
-        checkCurrentUser()
+        checkAuthState()
     }
 
-    private fun checkCurrentUser() {
+    private fun checkAuthState() {
         viewModelScope.launch {
             try {
-                when (val result = repository.getCurrentUser()) {
-                    is Result.Success -> {
-                        _currentUser.value = result.data
-                        _authState.value = AuthState.Authenticated
-                    }
-                    is Result.Error -> {
-                        _currentUser.value = null
-                        _authState.value = AuthState.Unauthenticated
-                    }
-                    is Result.RecaptchaRequired -> {
-                        _authState.value = AuthState.RecaptchaRequired
-                    }
+                val firebaseUser = auth.currentUser
+                if (firebaseUser != null) {
+                    // User is signed in, fetch user data
+                    fetchUserData(firebaseUser.uid)
+                } else {
+                    _authState.value = AuthState.Unauthenticated
+                    _currentUser.value = null
                 }
             } catch (e: Exception) {
-                _currentUser.value = null
-                _authState.value = AuthState.Error("Failed to check authentication state")
+                _authState.value = AuthState.Error("Failed to check authentication state: ${e.message}")
             }
         }
     }
 
-    fun register(
-        email: String,
-        password: String,
-        firstName: String,
-        lastName: String,
-        phoneNumber: String,
-        activity: Activity
-    ) {
+    private suspend fun fetchUserData(userId: String) {
+        try {
+            val user = repository.getUser(userId)
+            if (user != null) {
+                _currentUser.value = user
+                _authState.value = AuthState.Authenticated
+            } else {
+                // User document doesn't exist, sign out
+                signOut()
+                _authState.value = AuthState.Error("User data not found")
+            }
+        } catch (e: Exception) {
+            _authState.value = AuthState.Error("Failed to fetch user data: ${e.message}")
+        }
+    }
+
+    fun signIn(email: String, password: String) {
+        if (!validateSignInInput(email, password)) return
+
         viewModelScope.launch {
             try {
                 _authState.value = AuthState.Loading
-                
-                // Quick validation
-                if (email.isBlank() || password.isBlank() || firstName.isBlank() || lastName.isBlank() || phoneNumber.isBlank()) {
-                    _authState.value = AuthState.Error("All fields are required")
-                    return@launch
+                withContext(Dispatchers.IO) {
+                    auth.signInWithEmailAndPassword(email, password).await()
                 }
-
-                // Password strength check
-                if (password.length < 6) {
-                    _authState.value = AuthState.Error("Password must be at least 6 characters")
-                    return@launch
-                }
-
-                when (val result = repository.register(email, password, firstName, lastName, phoneNumber, activity)) {
-                    is Result.Success -> {
-                        // After successful registration, get the user data
-                        when (val userResult = repository.getCurrentUser()) {
-                            is Result.Success -> {
-                                _currentUser.value = userResult.data
-                                _authState.value = AuthState.Authenticated
-                            }
-                            is Result.Error -> {
-                                _authState.value = AuthState.Error("Registration successful but failed to get user data")
-                            }
-                            is Result.RecaptchaRequired -> {
-                                _authState.value = AuthState.RecaptchaRequired
-                            }
-                        }
-                    }
-                    is Result.Error -> {
-                        val errorMessage = when (result.exception) {
-                            is FirebaseAuthException -> {
-                                when ((result.exception as FirebaseAuthException).errorCode) {
-                                    "ERROR_EMAIL_ALREADY_IN_USE" -> "Email is already registered"
-                                    "ERROR_INVALID_EMAIL" -> "Invalid email format"
-                                    "ERROR_WEAK_PASSWORD" -> "Password is too weak"
-                                    else -> "Registration failed: ${result.exception.message}"
-                                }
-                            }
-                            else -> "Registration failed: ${result.exception.message}"
-                        }
-                        _authState.value = AuthState.Error(errorMessage)
-                    }
-                    is Result.RecaptchaRequired -> {
-                        _authState.value = AuthState.RecaptchaRequired
-                    }
-                }
+                // Sign in successful, fetch user data
+                auth.currentUser?.let { fetchUserData(it.uid) }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Registration failed: ${e.message}")
+                handleAuthError(e)
             }
         }
     }
 
-    fun signIn(email: String, password: String, activity: Activity) {
+    fun register(email: String, password: String, name: String, phone: String) {
+        if (!validateRegistrationInput(email, password, name, phone)) return
+
         viewModelScope.launch {
             try {
                 _authState.value = AuthState.Loading
-                
-                // Quick validation
-                if (email.isBlank() || password.isBlank()) {
-                    _authState.value = AuthState.Error("Email and password are required")
-                    return@launch
-                }
+                withContext(Dispatchers.IO) {
+                    // Create user in Firebase Auth
+                    val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+                    val userId = authResult.user?.uid ?: throw IllegalStateException("User ID is null")
 
-                when (val result = repository.signIn(email, password, activity)) {
-                    is Result.Success -> {
-                        _currentUser.value = result.data
-                        _authState.value = AuthState.Authenticated
-                    }
-                    is Result.Error -> {
-                        val errorMessage = when (result.exception) {
-                            is FirebaseAuthException -> {
-                                when ((result.exception as FirebaseAuthException).errorCode) {
-                                    "ERROR_INVALID_EMAIL" -> "Invalid email format"
-                                    "ERROR_USER_NOT_FOUND" -> "No account found with this email"
-                                    "ERROR_WRONG_PASSWORD" -> "Incorrect password"
-                                    "ERROR_USER_DISABLED" -> "This account has been disabled"
-                                    "ERROR_TOO_MANY_REQUESTS" -> "Too many attempts. Please try again later"
-                                    else -> "Sign in failed: ${result.exception.message}"
-                                }
-                            }
-                            else -> "Sign in failed: ${result.exception.message}"
-                        }
-                        _authState.value = AuthState.Error(errorMessage)
-                    }
-                    is Result.RecaptchaRequired -> {
-                        _authState.value = AuthState.RecaptchaRequired
-                    }
+                    // Create user document in Firestore
+                    val user = User(
+                        id = userId,
+                        email = email,
+                        firstName = name.split(" ").firstOrNull() ?: name,
+                        lastName = name.split(" ").drop(1).joinToString(" "),
+                        phoneNumber = phone
+                    )
+                    repository.createUser(user)
                 }
+                _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Sign in failed: ${e.message}")
+                handleAuthError(e)
             }
         }
     }
@@ -159,44 +113,131 @@ class AuthViewModel : ViewModel() {
     fun signOut() {
         viewModelScope.launch {
             try {
-                repository.signOut()
+                withContext(Dispatchers.IO) {
+                    auth.signOut()
+                }
                 _currentUser.value = null
-                _authState.value = AuthState.Unauthenticated
+                _authState.value = AuthState.SignedOut
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Failed to sign out: ${e.message}")
             }
         }
     }
 
-    fun updateProfile(
-        firstName: String? = null,
-        lastName: String? = null,
-        phoneNumber: String? = null
-    ) {
+    fun resetPassword(email: String) {
+        if (!validateEmail(email)) {
+            _authState.value = AuthState.Error("Invalid email address")
+            return
+        }
+
         viewModelScope.launch {
-            _authState.value = AuthState.Loading
-            when (val result = repository.updateUserProfile(firstName, lastName, phoneNumber)) {
-                is Result.Success -> {
-                    _currentUser.value = result.data
-                    _authState.value = AuthState.Authenticated
+            try {
+                _authState.value = AuthState.Loading
+                withContext(Dispatchers.IO) {
+                    auth.sendPasswordResetEmail(email).await()
                 }
-                is Result.Error -> {
-                    _authState.value = AuthState.Error(result.exception.message ?: "Failed to update profile")
-                }
-                is Result.RecaptchaRequired -> {
-                    // Since this is a profile update, reCAPTCHA shouldn't be required
-                    // But we need to handle it to make the when expression exhaustive
-                    _authState.value = AuthState.Error("Unexpected reCAPTCHA requirement during profile update")
-                }
+                _authState.value = AuthState.Authenticated
+            } catch (e: Exception) {
+                handleAuthError(e)
             }
         }
     }
-}
 
-sealed class AuthState {
-    object Loading : AuthState()
-    object Authenticated : AuthState()
-    object Unauthenticated : AuthState()
-    object RecaptchaRequired : AuthState()
-    data class Error(val message: String) : AuthState()
+    private fun handleAuthError(e: Exception) {
+        _authState.value = when (e) {
+            is FirebaseAuthInvalidUserException -> AuthState.Error("No account found with this email")
+            is FirebaseAuthInvalidCredentialsException -> AuthState.Error("Invalid email or password")
+            is FirebaseAuthWeakPasswordException -> AuthState.Error("Password is too weak")
+            else -> AuthState.Error(e.message ?: "Authentication failed")
+        }
+    }
+
+    private fun validateSignInInput(email: String, password: String): Boolean {
+        when {
+            email.isBlank() -> {
+                _authState.value = AuthState.Error("Email is required")
+                return false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                _authState.value = AuthState.Error("Invalid email format")
+                return false
+            }
+            password.isBlank() -> {
+                _authState.value = AuthState.Error("Password is required")
+                return false
+            }
+            password.length < 6 -> {
+                _authState.value = AuthState.Error("Password must be at least 6 characters")
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun validateRegistrationInput(email: String, password: String, name: String, phone: String): Boolean {
+        when {
+            !validateEmail(email) -> return false
+            !validatePassword(password) -> return false
+            name.isBlank() -> {
+                _authState.value = AuthState.Error("Name is required")
+                return false
+            }
+            phone.isBlank() -> {
+                _authState.value = AuthState.Error("Phone number is required")
+                return false
+            }
+            !validatePhone(phone) -> {
+                _authState.value = AuthState.Error("Invalid phone number format")
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun validateEmail(email: String): Boolean {
+        return when {
+            email.isBlank() -> {
+                _authState.value = AuthState.Error("Email is required")
+                false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                _authState.value = AuthState.Error("Invalid email format")
+                false
+            }
+            else -> true
+        }
+    }
+
+    private fun validatePassword(password: String): Boolean {
+        return when {
+            password.isBlank() -> {
+                _authState.value = AuthState.Error("Password is required")
+                false
+            }
+            password.length < 6 -> {
+                _authState.value = AuthState.Error("Password must be at least 6 characters")
+                false
+            }
+            !password.any { it.isDigit() } -> {
+                _authState.value = AuthState.Error("Password must contain at least one number")
+                false
+            }
+            !password.any { it.isUpperCase() } -> {
+                _authState.value = AuthState.Error("Password must contain at least one uppercase letter")
+                false
+            }
+            else -> true
+        }
+    }
+
+    private fun validatePhone(phone: String): Boolean {
+        // Basic phone validation - can be enhanced based on requirements
+        val phoneRegex = "^\\+?[1-9]\\d{1,14}$".toRegex()
+        return phoneRegex.matches(phone)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Clean up any resources if needed
+    }
 } 

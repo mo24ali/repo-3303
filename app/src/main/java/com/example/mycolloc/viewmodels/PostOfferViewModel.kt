@@ -10,6 +10,12 @@ import com.example.mycolloc.repository.FirebaseRepository
 import com.example.mycolloc.repository.Result
 import kotlinx.coroutines.launch
 
+sealed class PostOfferUiState {
+    object Loading : PostOfferUiState()
+    data class Success(val offerId: String) : PostOfferUiState()
+    data class Error(val message: String) : PostOfferUiState()
+}
+
 class PostOfferViewModel : ViewModel() {
     private val repository = FirebaseRepository()
 
@@ -20,13 +26,14 @@ class PostOfferViewModel : ViewModel() {
         title: String,
         description: String,
         price: Double,
+        category: String,
         location: Location
     ) {
         viewModelScope.launch {
             _uiState.value = PostOfferUiState.Loading
             
             // Validate input
-            if (title.isBlank() || description.isBlank() || price <= 0) {
+            if (title.isBlank() || description.isBlank() || price <= 0 || category.isBlank()) {
                 _uiState.value = PostOfferUiState.Error("Please fill all required fields")
                 return@launch
             }
@@ -35,7 +42,11 @@ class PostOfferViewModel : ViewModel() {
                 title = title,
                 description = description,
                 price = price,
-                location = location
+                category = category,
+                location = location.address,
+                latitude = location.latitude,
+                longitude = location.longitude,
+                isActive = true
             )
 
             when (val result = repository.createOffer(offer)) {
@@ -52,10 +63,4 @@ class PostOfferViewModel : ViewModel() {
             }
         }
     }
-}
-
-sealed class PostOfferUiState {
-    object Loading : PostOfferUiState()
-    data class Success(val offerId: String) : PostOfferUiState()
-    data class Error(val message: String) : PostOfferUiState()
 } 

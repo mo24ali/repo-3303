@@ -5,18 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.example.mycolloc.R
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import com.example.mycolloc.R
 import com.example.mycolloc.databinding.DialogRegisterBinding
-import com.example.mycolloc.viewmodels.AuthState
 import com.example.mycolloc.viewmodels.AuthViewModel
+import com.example.mycolloc.viewmodels.AuthState
+import com.google.android.material.snackbar.Snackbar
 
 class RegisterDialog : DialogFragment() {
     private var _binding: DialogRegisterBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: AuthViewModel by viewModels()
+    private val viewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return Dialog(requireContext(), R.style.Theme_ColoColo_Dialog).apply {
@@ -35,40 +36,19 @@ class RegisterDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupViews()
+        setupClickListeners()
         observeAuthState()
     }
 
-    private fun setupViews() {
+    private fun setupClickListeners() {
         binding.btnRegister.setOnClickListener {
-            val fullName = binding.etFullName.text.toString()
-            val phone = binding.etPhone.text.toString()
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
-            val confirmPassword = binding.etConfirmPassword.text.toString()
-
-            // Validate input
-            when {
-                fullName.isBlank() -> showError("Full name is required")
-                phone.isBlank() -> showError("Phone number is required")
-                email.isBlank() -> showError("Email is required")
-                password.isBlank() -> showError("Password is required")
-                confirmPassword.isBlank() -> showError("Please confirm your password")
-                password != confirmPassword -> showError("Passwords do not match")
-                else -> {
-                    // Split full name into first and last name
-                    val nameParts = fullName.trim().split("\\s+".toRegex())
-                    val firstName = nameParts.firstOrNull() ?: ""
-                    val lastName = nameParts.drop(1).joinToString(" ")
-
-                    viewModel.register(email, password, firstName, lastName, phone, requireActivity())
-                }
+            if (validateInputs()) {
+                val email = binding.emailInput.editText?.text.toString()
+                val password = binding.passwordInput.editText?.text.toString()
+                val name = binding.nameInput.editText?.text.toString()
+                val phone = binding.phoneInput.editText?.text.toString()
+                viewModel.register(email, password, name, phone)
             }
-        }
-
-        binding.tvLoginPrompt.setOnClickListener {
-            dismiss()
         }
     }
 
@@ -76,28 +56,97 @@ class RegisterDialog : DialogFragment() {
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AuthState.Loading -> {
-                    binding.btnRegister.isEnabled = false
-                    binding.btnRegister.text = "Registering..."
+                    showLoading(true)
+                    enableInputs(false)
                 }
-                is AuthState.Authenticated -> {
-                    Toast.makeText(context, "Registration successful!", Toast.LENGTH_SHORT).show()
+                is AuthState.SignedIn, is AuthState.Authenticated -> {
+                    showLoading(false)
                     dismiss()
                 }
+                is AuthState.SignedOut, is AuthState.Unauthenticated -> {
+                    showLoading(false)
+                    enableInputs(true)
+                }
                 is AuthState.Error -> {
-                    binding.btnRegister.isEnabled = true
-                    binding.btnRegister.text = "Register"
+                    showLoading(false)
+                    enableInputs(true)
                     showError(state.message)
                 }
-                else -> {
-                    binding.btnRegister.isEnabled = true
-                    binding.btnRegister.text = "Register"
+                is AuthState.RecaptchaRequired -> {
+                    showLoading(false)
+                    enableInputs(true)
+                    showReCAPTCHAError()
                 }
             }
         }
     }
 
+    private fun showLoading(show: Boolean) {
+        binding.progressBar.isVisible = show
+        binding.btnRegister.isEnabled = !show
+    }
+
+    private fun enableInputs(enable: Boolean) {
+        binding.emailInput.isEnabled = enable
+        binding.passwordInput.isEnabled = enable
+        binding.nameInput.isEnabled = enable
+        binding.phoneInput.isEnabled = enable
+        binding.btnRegister.isEnabled = enable
+    }
+
     private fun showError(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showReCAPTCHAError() {
+        showError("Please verify you are not a robot")
+    }
+
+    private fun validateInputs(): Boolean {
+        var isValid = true
+
+        with(binding) {
+            val email = emailInput.editText?.text.toString()
+            val password = passwordInput.editText?.text.toString()
+            val name = nameInput.editText?.text.toString()
+            val phone = phoneInput.editText?.text.toString()
+
+            if (email.isBlank()) {
+                emailInput.error = getString(R.string.error_required)
+                isValid = false
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                emailInput.error = getString(R.string.error_invalid_email)
+                isValid = false
+            } else {
+                emailInput.error = null
+            }
+
+            if (password.isBlank()) {
+                passwordInput.error = getString(R.string.error_required)
+                isValid = false
+            } else if (password.length < 6) {
+                passwordInput.error = getString(R.string.error_invalid_password)
+                isValid = false
+            } else {
+                passwordInput.error = null
+            }
+
+            if (name.isBlank()) {
+                nameInput.error = getString(R.string.error_required)
+                isValid = false
+            } else {
+                nameInput.error = null
+            }
+
+            if (phone.isBlank()) {
+                phoneInput.error = getString(R.string.error_required)
+                isValid = false
+            } else {
+                phoneInput.error = null
+            }
+        }
+
+        return isValid
     }
 
     override fun onDestroyView() {

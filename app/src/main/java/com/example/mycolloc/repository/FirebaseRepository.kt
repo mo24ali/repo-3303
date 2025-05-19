@@ -127,7 +127,7 @@ class FirebaseRepository {
         val userSnapshot = usersRef.child(userId).get().await()
         val user = userSnapshot.getValue<User>() ?: throw IllegalStateException("User data not found")
         Result.Success(user)
-    } catch (e: Exception) {
+        } catch (e: Exception) {
         Result.Error(e)
     }
 
@@ -166,7 +166,7 @@ class FirebaseRepository {
         )
         offersRef.child(offerWithId.id).setValue(offerWithId).await()
         Result.Success(offerWithId.id)
-    } catch (e: Exception) {
+        } catch (e: Exception) {
         Result.Error(e)
     }
 
@@ -182,7 +182,7 @@ class FirebaseRepository {
         val snapshot = offersRef.child(id).get().await()
         val offer = snapshot.getValue<Offer>() ?: throw IllegalStateException("Offer not found")
         Result.Success(offer)
-    } catch (e: Exception) {
+        } catch (e: Exception) {
         Result.Error(e)
     }
 
@@ -211,13 +211,17 @@ class FirebaseRepository {
 
             // Filter offers by actual distance (since bounding box is approximate)
             val nearbyOffers = offers.filter { offer ->
-                val offerLat = offer.location.latitude
-                val offerLng = offer.location.longitude
-                val distance = calculateDistance(
-                    latitude, longitude,
-                    offerLat, offerLng
-                )
-                distance <= radiusInKm
+                val offerLat = offer.latitude
+                val offerLng = offer.longitude
+                if (offerLat != null && offerLng != null) {
+                    val distance = calculateDistance(
+                        latitude, longitude,
+                        offerLat, offerLng
+                    )
+                    distance <= radiusInKm
+                } else {
+                    false
+                }
             }
 
             emit(nearbyOffers)
@@ -257,6 +261,94 @@ class FirebaseRepository {
         // Delete the offer
         offersRef.child(offerId).removeValue().await()
         Result.Success(Unit)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    // User operations
+    suspend fun getUser(userId: String): User? {
+        return try {
+            val snapshot = usersRef.child(userId).get().await()
+            snapshot.getValue<User>()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun createUser(user: User): Result<String> = try {
+        usersRef.child(user.id).setValue(user).await()
+        Result.Success(user.id)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    // Offer operations
+    suspend fun getAllOffers(): Result<List<Offer>> = try {
+        val snapshot = offersRef.get().await()
+        val offers = snapshot.children.mapNotNull { it.getValue<Offer>() }
+        Result.Success(offers)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    suspend fun searchOffers(query: String): Result<List<Offer>> = try {
+        val snapshot = offersRef.get().await()
+        val offers = snapshot.children.mapNotNull { it.getValue<Offer>() }
+            .filter { offer ->
+                offer.title.contains(query, ignoreCase = true) ||
+                offer.description.contains(query, ignoreCase = true) ||
+                offer.category.contains(query, ignoreCase = true)
+            }
+        Result.Success(offers)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    suspend fun getOffersByCategory(category: String): Result<List<Offer>> = try {
+        val snapshot = offersRef
+            .orderByChild("category")
+            .equalTo(category)
+            .get()
+            .await()
+        val offers = snapshot.children.mapNotNull { it.getValue<Offer>() }
+            .filter { it.isActive }
+        Result.Success(offers)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    suspend fun getOffersByPriceRange(minPrice: Double, maxPrice: Double): Result<List<Offer>> = try {
+        val snapshot = offersRef
+            .orderByChild("price")
+            .startAt(minPrice)
+            .endAt(maxPrice)
+            .get()
+            .await()
+        val offers = snapshot.children.mapNotNull { it.getValue<Offer>() }
+            .filter { it.isActive }
+        Result.Success(offers)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    suspend fun getOffersByLocation(latitude: Double, longitude: Double, radiusInKm: Double): Result<List<Offer>> = try {
+        val snapshot = offersRef.get().await()
+        val offers = snapshot.children.mapNotNull { it.getValue<Offer>() }
+            .filter { offer ->
+                offer.latitude != null && offer.longitude != null &&
+                calculateDistance(latitude, longitude, offer.latitude!!, offer.longitude!!) <= radiusInKm
+            }
+        Result.Success(offers)
+    } catch (e: Exception) {
+        Result.Error(e)
+    }
+
+    suspend fun updateOfferStatus(offerId: String, isActive: Boolean): Result<Offer> = try {
+        val updates = mapOf("isActive" to isActive, "updatedAt" to System.currentTimeMillis())
+        offersRef.child(offerId).updateChildren(updates).await()
+        val snapshot = offersRef.child(offerId).get().await()
+        val offer = snapshot.getValue<Offer>() ?: throw IllegalStateException("Offer not found")
+        Result.Success(offer)
     } catch (e: Exception) {
         Result.Error(e)
     }

@@ -24,6 +24,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import java.text.NumberFormat
+import java.util.*
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
@@ -149,14 +151,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun updateMapMarkers(offers: List<Offer>) {
         map.clear()
         offers.forEach { offer ->
-            val position = LatLng(offer.location.latitude, offer.location.longitude)
-            map.addMarker(
-                MarkerOptions()
-                    .position(position)
-                    .title(offer.title)
-                    .snippet("${offer.price}€ - ${offer.location.city}")
-            )
+            offer.latitude?.let { lat ->
+                offer.longitude?.let { lng ->
+                    val position = LatLng(lat, lng)
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(position)
+                            .title(offer.title)
+                            .snippet("${formatPrice(offer.price)} - ${offer.location}")
+                    )
+                }
+            }
         }
+    }
+
+    private fun formatPrice(price: Double): String {
+        return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(price)
     }
 
     fun requestLocationUpdates() {

@@ -33,7 +33,8 @@ class OffersAdapter(
 
         init {
             binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
+                //val position = bindingAdapterPosition
+                val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     onOfferClick(getItem(position))
                 }
@@ -44,19 +45,18 @@ class OffersAdapter(
             binding.apply {
                 offerTitle.text = offer.title
                 offerPrice.text = formatPrice(offer.price)
-                offerLocation.text = offer.location.city.takeIf { it.isNotBlank() } ?: "Location not specified"
+                offerLocation.text = offer.location.ifBlank { "Location not specified" }
+                offerCategory.text = offer.category.ifBlank { "Uncategorized" }
                 offerDescription.text = offer.description
 
-                // Set click listener for the "Make an offer" button
-                buttonMakeOffer.setOnClickListener {
-                    onOfferClick(offer)
-                }
+                // TODO: Load offer image using an image loading library like Glide or Coil
+                // For now, we'll just use a placeholder
+                offerImage.setImageResource(android.R.drawable.ic_menu_gallery)
             }
         }
 
         private fun formatPrice(price: Double): String {
-            val format = NumberFormat.getCurrencyInstance(Locale("fr", "FR"))
-            return format.format(price)
+            return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(price)
         }
     }
 

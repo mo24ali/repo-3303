@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyColloc</string>
+    <string name="maps_api_key">AIzaSyCVIFnsDTBM0J9X_d8054kqDJ65P_jg8L8</string>
 
     <!-- Auth -->
     <string name="login">Login</string>
     <string name="register">Register</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
     <string name="create_account">Create an account</string>
-    <string name="forgot_password">Forgot password?</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="dont_have_account">Don\'t have an account? Register</string>
 
     <!-- Home -->
     <string name="list_view">List</string>
@@ -62,4 +67,13 @@
     <!-- Permissions -->
     <string name="permission_location_required">Location permission is required to show nearby offers</string>
     <string name="permission_storage_required">Storage permission is required to upload images</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_offers">My Offers</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
+
+    <string name="offer_image">Offer image</string>
 </resources>

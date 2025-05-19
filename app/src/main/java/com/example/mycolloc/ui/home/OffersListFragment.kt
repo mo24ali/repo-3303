@@ -5,13 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mycolloc.databinding.FragmentOffersListBinding
 import com.example.mycolloc.ui.details.DetailsArticleActivity
-import com.example.mycolloc.viewmodels.HomeViewModel
 import com.example.mycolloc.viewmodels.HomeUiState
+import com.example.mycolloc.viewmodels.HomeViewModel
 
 class OffersListFragment : Fragment() {
     private var _binding: FragmentOffersListBinding? = null
@@ -31,12 +33,11 @@ class OffersListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        observeOffers()
+        observeViewModel()
     }
 
     private fun setupRecyclerView() {
         offersAdapter = OffersAdapter { offer ->
-            // Navigate to offer details
             val intent = Intent(requireContext(), DetailsArticleActivity::class.java).apply {
                 putExtra(DetailsArticleActivity.EXTRA_OFFER_ID, offer.id)
             }
@@ -49,32 +50,38 @@ class OffersListFragment : Fragment() {
         }
     }
 
-    private fun observeOffers() {
-        viewModel.offers.observe(viewLifecycleOwner) { offers ->
-            offersAdapter.submitList(offers)
-        }
-
+    private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is HomeUiState.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.recyclerView.visibility = View.GONE
+                    binding.progressBar.isVisible = true
+                    binding.recyclerView.isVisible = false
+                    binding.emptyView.isVisible = false
                 }
                 is HomeUiState.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.progressBar.isVisible = false
+                    binding.recyclerView.isVisible = true
+                    binding.emptyView.isVisible = state.offers.isEmpty()
+                    offersAdapter.submitList(state.offers)
                 }
                 is HomeUiState.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    // Error is handled by the activity
+                    binding.progressBar.isVisible = false
+                    binding.recyclerView.isVisible = false
+                    binding.emptyView.isVisible = true
+                    showError(state.message)
                 }
+
+                else -> {}
             }
         }
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-} 
+}

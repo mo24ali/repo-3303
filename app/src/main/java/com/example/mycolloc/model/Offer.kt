@@ -2,12 +2,18 @@ package com.example.mycolloc.model
 
 data class Offer(
     val id: String = "",
+    val userId: String = "",
     val title: String = "",
     val description: String = "",
     val price: Double = 0.0,
-    val userId: String = "",
-    val location: Location = Location(),
-    val createdAt: Long = System.currentTimeMillis()
+    val category: String = "",
+    val location: String = "",
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val images: List<String> = emptyList(),
+    val isActive: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
 )
 
 data class Location(

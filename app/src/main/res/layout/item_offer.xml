@@ -2,25 +2,35 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.ColoColo.CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <ImageView
+            android:id="@+id/offerImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/offer_image"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
         <TextView
             android:id="@+id/offerTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
+            android:layout_marginStart="16dp"
             android:textAppearance="?attr/textAppearanceSubtitle1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/offerImage"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Offer Title" />
 
@@ -28,24 +38,38 @@
             android:id="@+id/offerPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="?attr/textAppearanceBody1"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="?attr/colorPrimary"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/offerTitle"
             app:layout_constraintTop_toBottomOf="@id/offerTitle"
-            tools:text="€500" />
+            tools:text="$100" />
 
         <TextView
             android:id="@+id/offerLocation"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:drawablePadding="4dp"
             android:textAppearance="?attr/textAppearanceBody2"
-            app:drawableStartCompat="@android:drawable/ic_menu_mylocation"
-            app:layout_constraintStart_toStartOf="parent"
+            app:drawableStartCompat="@drawable/ic_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/offerTitle"
             app:layout_constraintTop_toBottomOf="@id/offerPrice"
-            tools:text="Paris, France" />
+            tools:text="Location" />
+
+        <TextView
+            android:id="@+id/offerCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_category"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:textAppearance="?attr/textAppearanceCaption"
+            app:layout_constraintStart_toStartOf="@id/offerTitle"
+            app:layout_constraintTop_toBottomOf="@id/offerLocation"
+            tools:text="Category" />
 
         <TextView
             android:id="@+id/offerDescription"
@@ -57,18 +81,8 @@
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/offerLocation"
-            tools:text="Offer description goes here with some details about the item being sold." />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonMakeOffer"
-            style="@style/Widget.ColoColo.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Make an offer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/offerDescription" />
+            app:layout_constraintTop_toBottomOf="@id/offerImage"
+            tools:text="Offer description goes here. This is a sample description that might be longer than one line." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -10,6 +10,12 @@ import com.example.mycolloc.repository.FirebaseRepository
 import com.example.mycolloc.repository.Result
 import kotlinx.coroutines.launch
 
+sealed class PostOfferUiState {
+    object Loading : PostOfferUiState()
+    data class Success(val offerId: String) : PostOfferUiState()
+    data class Error(val message: String) : PostOfferUiState()
+}
+
 class PostOfferViewModel : ViewModel() {
     private val repository = FirebaseRepository()
 
@@ -20,37 +26,41 @@ class PostOfferViewModel : ViewModel() {
         title: String,
         description: String,
         price: Double,
+        category: String,
         location: Location
     ) {
-        if (title.isBlank() || description.isBlank() || price <= 0) {
-            _uiState.value = PostOfferUiState.Error("Please fill in all required fields")
-            return
-        }
-
         viewModelScope.launch {
             _uiState.value = PostOfferUiState.Loading
             
+            // Validate input
+            if (title.isBlank() || description.isBlank() || price <= 0 || category.isBlank()) {
+                _uiState.value = PostOfferUiState.Error("Please fill all required fields")
+                return@launch
+            }
+
             val offer = Offer(
                 title = title,
                 description = description,
                 price = price,
-                location = location
+                category = category,
+                location = location.address,
+                latitude = location.latitude,
+                longitude = location.longitude,
+                isActive = true
             )
 
-            when (val result: Result<String> = repository.createOffer(offer)) {
+            when (val result = repository.createOffer(offer)) {
                 is Result.Success -> {
                     _uiState.value = PostOfferUiState.Success(result.data)
                 }
                 is Result.Error -> {
                     _uiState.value = PostOfferUiState.Error(result.exception.message ?: "Failed to create offer")
                 }
+                is Result.RecaptchaRequired -> {
+                    // Since this is just creating an offer, reCAPTCHA shouldn't be required
+                    _uiState.value = PostOfferUiState.Error("Unexpected reCAPTCHA requirement")
+                }
             }
         }
     }
-}
-
-sealed class PostOfferUiState {
-    object Loading : PostOfferUiState()
-    data class Success(val offerId: String) : PostOfferUiState()
-    data class Error(val message: String) : PostOfferUiState()
 } 

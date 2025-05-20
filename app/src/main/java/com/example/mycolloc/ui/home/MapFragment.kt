@@ -1,184 +1,153 @@
 package com.example.mycolloc.ui.home
 
 import android.Manifest
+import android.app.Activity
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.mycolloc.R
-import com.example.mycolloc.databinding.FragmentMapBinding
-import com.example.mycolloc.model.Offer
 import com.example.mycolloc.viewmodels.HomeViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.snackbar.Snackbar
-import java.text.NumberFormat
-import java.util.*
 
 class MapFragment : Fragment(), OnMapReadyCallback {
-    private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel: HomeViewModel by activityViewModels()
 
-    private lateinit var map: GoogleMap
+    private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var currentLocation: Location? = null
-
-    private val locationPermissionRequest = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                    permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true -> {
-                // Permission granted, enable location features
-                enableMyLocation()
-            }
-            else -> {
-                // Permission denied, show message
-                Snackbar.make(
-                    binding.root,
-                    "Location permission is required to show nearby offers",
-                    Snackbar.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var settingsClient: SettingsClient
+    private val viewModel: HomeViewModel by activityViewModels()
+    private val LOCATION_PERMISSION_CODE = 1001
+    private val LOCATION_REQUEST_CODE = 2001
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentMapBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    ): View = inflater.inflate(R.layout.fragment_map, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupMap()
-        setupLocationClient()
-        observeOffers()
-    }
-
-    private fun setupMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-    }
 
-    private fun setupLocationClient() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-    }
+        settingsClient = LocationServices.getSettingsClient(requireActivity())
+        locationRequest = LocationRequest.create().apply {
+            priority = Priority.PRIORITY_HIGH_ACCURACY
+            interval = 10000
+            fastestInterval = 5000
+        }
 
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
         checkLocationPermission()
     }
 
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+    }
+
     private fun checkLocationPermission() {
-        when {
-            hasLocationPermission() -> {
-                enableMyLocation()
-            }
-            else -> {
-                requestLocationPermission()
-            }
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            checkLocationSettings()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_CODE)
         }
     }
 
-    private fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
+    private fun checkLocationSettings() {
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+        settingsClient.checkLocationSettings(builder.build())
+            .addOnSuccessListener { getUserLocation() }
+            .addOnFailureListener { exception ->
+                if (exception is ResolvableApiException) {
+                    try {
+                        exception.startResolutionForResult(requireActivity(), LOCATION_REQUEST_CODE)
+                    } catch (sendEx: IntentSender.SendIntentException) {
+                        Toast.makeText(requireContext(), "Impossible d'activer la localisation", Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Localisation désactivée", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 
-    private fun requestLocationPermission() {
-        locationPermissionRequest.launch(
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        )
-    }
-
-    private fun enableMyLocation() {
-        if (hasLocationPermission()) {
-            map.isMyLocationEnabled = true
-            getLastLocation()
-        }
-    }
-
-    private fun getLastLocation() {
-        if (hasLocationPermission()) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    currentLocation = it
-                    updateMapWithLocation(it)
-                    // Load nearby offers
-                    viewModel.loadNearbyOffers(it.latitude, it.longitude)
+    private fun getUserLocation() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                showUserAndOffers(location)
+            } else {
+                // Fallback : demander une localisation active
+                fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    CancellationTokenSource().token
+                ).addOnSuccessListener { newLocation ->
+                    if (newLocation != null) {
+                        showUserAndOffers(newLocation)
+                    } else {
+                        Toast.makeText(requireContext(), "Impossible de récupérer la localisation", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
     }
 
-    private fun updateMapWithLocation(location: Location) {
-        val latLng = LatLng(location.latitude, location.longitude)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+    private fun showUserAndOffers(location: Location) {
+        val userLatLng = LatLng(location.latitude, location.longitude)
+        mMap.clear()
+        mMap.addMarker(
+            MarkerOptions()
+                .position(userLatLng)
+                .title("Vous êtes ici")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+        )
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 14f))
+
+        viewModel.loadNearbyOffers(location.latitude, location.longitude)
+        observeNearbyOffers()
     }
 
-    private fun observeOffers() {
+    private fun observeNearbyOffers() {
         viewModel.nearbyOffers.observe(viewLifecycleOwner) { offers ->
-            updateMapMarkers(offers)
-        }
-    }
-
-    private fun updateMapMarkers(offers: List<Offer>) {
-        map.clear()
-        offers.forEach { offer ->
-            offer.latitude?.let { lat ->
-                offer.longitude?.let { lng ->
-                    val position = LatLng(lat, lng)
-                    map.addMarker(
+            offers.forEach { offer ->
+                val lat = offer.latitude
+                val lon = offer.longitude
+                if (lat != null && lon != null) {
+                    mMap.addMarker(
                         MarkerOptions()
-                            .position(position)
+                            .position(LatLng(lat, lon))
                             .title(offer.title)
-                            .snippet("${formatPrice(offer.price)} - ${offer.location}")
+                            .snippet("${offer.price} MAD")
                     )
                 }
             }
         }
     }
 
-    private fun formatPrice(price: Double): String {
-        return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(price)
-    }
-
-    fun requestLocationUpdates() {
-        if (hasLocationPermission()) {
-            getLastLocation()
-        } else {
-            requestLocationPermission()
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == LOCATION_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkLocationSettings()
+            } else {
+                Toast.makeText(requireContext(), "Permission localisation refusée", Toast.LENGTH_LONG).show()
+            }
         }
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-} 
+}

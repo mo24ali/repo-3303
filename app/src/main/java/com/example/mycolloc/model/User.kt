@@ -7,7 +7,9 @@ data class User(
     val lastName: String = "",
     val phoneNumber: String = "",
     val role: UserRole = UserRole.USER,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 )
 
 enum class UserRole {

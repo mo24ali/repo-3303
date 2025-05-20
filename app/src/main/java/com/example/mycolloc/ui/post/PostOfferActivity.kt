@@ -16,10 +16,6 @@ class PostOfferActivity : AppCompatActivity() {
         binding = ActivityPostOfferBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Post an Offer"
-
         setupViews()
         observeViewModel()
     }

@@ -20,8 +20,7 @@ class DetailsArticleActivity : AppCompatActivity() {
         binding = ActivityDetailsArticleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
         val offerId = intent.getStringExtra(EXTRA_OFFER_ID)
         if (offerId == null) {
@@ -34,11 +33,9 @@ class DetailsArticleActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        // TODO: Implement view setup
     }
 
     private fun observeViewModel(offerId: String) {
-        // TODO: Implement view model observation
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

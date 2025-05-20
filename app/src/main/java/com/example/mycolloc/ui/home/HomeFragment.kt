@@ -41,16 +41,16 @@ class HomeFragment : Fragment() {
             }
             startActivity(intent)
         }
-        binding.recyclerView.apply {
+       /* binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = offersAdapter
-        }
+        }*/
     }
 
     private fun observeOffers() {
         viewModel.offers.observe(viewLifecycleOwner) { offers ->
             offersAdapter.submitList(offers)
-            binding.emptyView.visibility = if (offers.isEmpty()) View.VISIBLE else View.GONE
+            //binding.emptyView.visibility = if (offers.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 

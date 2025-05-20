@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mycolloc.R
 import com.example.mycolloc.databinding.ActivityLoginBinding
@@ -16,6 +17,8 @@ import com.google.android.material.snackbar.Snackbar
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: AuthViewModel by viewModels()
+    private  var loadingDialog: AlertDialog? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +39,8 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        binding.registerButton.setOnClickListener {
-            // TODO: Implement registration
-            Toast.makeText(this, "Registration coming soon!", Toast.LENGTH_SHORT).show()
+        binding.signUpLink.setOnClickListener {
+            startActivity(Intent(this,SignupActivity::class.java))
         }
     }
 
@@ -55,6 +57,7 @@ class LoginActivity : AppCompatActivity() {
                     showError(state.message)
                 }
                 is AuthState.Unauthenticated -> showLoading(false)
+                else -> {}
             }
         }
     }
@@ -79,11 +82,28 @@ class LoginActivity : AppCompatActivity() {
         return isValid
     }
 
+
     private fun showLoading(show: Boolean) {
-        binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) {
+            if (loadingDialog == null) {
+                val builder = AlertDialog.Builder(this)
+                val view = layoutInflater.inflate(R.layout.dialog_loading, null)
+                builder.setView(view)
+                builder.setCancelable(false)
+                loadingDialog = builder.create()
+            }
+            loadingDialog?.show()
+        } else {
+            loadingDialog?.dismiss()
+        }
+
+        // désactiver les actions pendant le chargement
         binding.loginButton.isEnabled = !show
-        binding.registerButton.isEnabled = !show
+        binding.emailEditText.isEnabled = !show
+        binding.passwordEditText.isEnabled = !show
+        binding.signUpLink.isEnabled = !show
     }
+
 
     private fun showError(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()

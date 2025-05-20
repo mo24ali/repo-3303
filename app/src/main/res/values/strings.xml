@@ -76,4 +76,6 @@
     <string name="logout">Logout</string>
 
     <string name="offer_image">Offer image</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

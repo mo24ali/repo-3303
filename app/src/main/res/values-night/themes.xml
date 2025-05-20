@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme -->
-    <style name="Theme.ColoColo" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.ColoColo" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
@@ -73,7 +73,7 @@
     </style>
 
     <!-- Base application theme -->
-    <style name="Theme.MyColloc" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.MyColloc" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>

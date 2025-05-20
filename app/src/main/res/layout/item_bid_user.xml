@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <!-- Header Row: avatar, name, time, call -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Avatar -->
+            <ImageView
+                android:id="@+id/userAvatar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/sample_avatar"
+                android:scaleType="centerCrop"
+                android:clipToOutline="true"
+                android:background="@drawable/circle_mask" />
+
+            <!-- Name and Time -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mohammed Abderahim"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/bidTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2h ago"
+                    android:textSize="12sp"
+                    android:textColor="#888888"
+                    android:fontFamily="@font/poppinsmedium" />
+            </LinearLayout>
+
+            <!-- Call icon -->
+            <ImageView
+                android:id="@+id/callIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_call"
+                android:background="@drawable/circle_mask"
+                android:backgroundTint="#F2F4F7"
+                android:padding="10dp"
+                android:clipToOutline="true" />
+        </LinearLayout>
+
+        <!-- Amount offered -->
+        <TextView
+            android:id="@+id/offerAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Offered: 1200 MAD"
+            android:textSize="16sp"
+            android:textColor="@color/primary"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/poppinssemibold" />
+
+        <!-- Accept / Decline Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/declineButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Decline"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppinsmedium"
+                android:backgroundTint="#EEEEEE"
+                android:textColor="#444"
+                app:cornerRadius="10dp"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/acceptButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Accept"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/poppinsmedium"
+                android:backgroundTint="@color/primary"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

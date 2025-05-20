@@ -58,7 +58,7 @@
                     android:layout_marginStart="16dp">
 
                     <TextView
-                        android:id="@+id/userName"
+                        android:id="@+id/userNameText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Hello Christopher"
@@ -68,7 +68,7 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
-                        android:id="@+id/userEmail"
+                        android:id="@+id/userEmailText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="christophernolan54@gmail.com"
@@ -77,7 +77,7 @@
                         android:layout_marginTop="2dp" />
 
                     <TextView
-                        android:id="@+id/userPhone"
+                        android:id="@+id/userPhoneText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="+1(555)123-9928"
@@ -116,6 +116,7 @@
 
                 <!-- Manage My Offers -->
                 <LinearLayout
+                    android:id="@+id/myOffersButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:orientation="horizontal"
@@ -188,6 +189,7 @@
 
                 <!-- Edit Password -->
                 <LinearLayout
+                    android:id="@+id/settingsButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:orientation="horizontal"
@@ -223,6 +225,7 @@
                 </LinearLayout>
                 <!-- Logout -->
                 <LinearLayout
+                    android:id="@+id/logoutButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:orientation="horizontal"

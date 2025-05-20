@@ -25,14 +25,14 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupUI()
-        observeUser()
+        //setupUI()
+        //observeUser()
     }
 
     private fun setupUI() {
-        binding.editProfileButton.setOnClickListener {
-            // TODO: Navigate to edit profile
-        }
+//        binding.editProfileButton.setOnClickListener {
+//            // TODO: Navigate to edit profile
+//        }
 
         binding.myOffersButton.setOnClickListener {
             // TODO: Navigate to my offers

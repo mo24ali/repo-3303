@@ -115,18 +115,20 @@
 
 
                 <!-- Manage My Offers -->
+
+                <!-- My Articles -->
                 <LinearLayout
                     android:id="@+id/myOffersButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:background="@drawable/border_setting_item"
                     android:layout_marginTop="8dp"
+                    android:background="@drawable/border_setting_item"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -139,19 +141,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Manage My Offers"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/poppinsmedium"
+                        android:text="My Bids"
                         android:textColor="@android:color/black"
-                        android:fontFamily="@font/poppinsmedium" />
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/flesh_right"
-                        app:tint="@color/black"/>
+                        app:tint="@color/black" />
                 </LinearLayout>
 
-                <!-- My Articles -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -175,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="My Articles"
+                        android:text="My Offers"
                         android:textSize="16sp"
                         android:textColor="@android:color/black"
                         android:fontFamily="@font/poppinsmedium" />

@@ -17,18 +17,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Image -->
-
-            <!-- Price and Type -->
+            <!-- Image principale -->
             <ImageView
                 android:id="@+id/apartmentImage"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:background="@drawable/rounded_top_image"
-                android:clipToOutline="true"
                 android:scaleType="centerCrop"
+                android:clipToOutline="true"
+                android:background="@drawable/rounded_top_image"
                 android:src="@drawable/sample_apartment" />
 
+            <!-- Prix et type -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,6 +36,8 @@
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="$1399"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -44,6 +45,8 @@
                     android:fontFamily="@font/poppinssemibold" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="/ Month"
                     android:textSize="18sp"
@@ -51,6 +54,8 @@
                     android:fontFamily="@font/poppinsmedium" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="Apartment"
                     android:textColor="@color/primary"
@@ -58,7 +63,7 @@
                     android:fontFamily="@font/poppinsmedium" />
             </LinearLayout>
 
-            <!-- Address -->
+            <!-- Adresse -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +73,7 @@
                 android:textColor="#888888"
                 android:fontFamily="@font/poppinsmedium" />
 
-            <!-- Features Row -->
+            <!-- Caractéristiques -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,9 +81,10 @@
                 android:orientation="horizontal"
                 android:weightSum="3">
 
+                <!-- Chambres -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -99,12 +105,13 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
+                <!-- Salles de bain -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="18dp"
@@ -122,12 +129,13 @@
                         android:textColor="#444" />
                 </LinearLayout>
 
+                <!-- Surface -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="18dp"
@@ -146,7 +154,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Owner card -->
+            <!-- Carte Propriétaire -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -193,20 +201,19 @@
                             android:fontFamily="@font/poppinsmedium" />
                     </LinearLayout>
 
-
-
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_call"
-                        android:backgroundTint="#F2F4F7"
-                        android:padding="10dp"
                         android:layout_marginStart="8dp"
                         android:background="@drawable/circle_mask"
-                        android:clipToOutline="true" />
+                        android:backgroundTint="#F2F4F7"
+                        android:clipToOutline="true"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_call" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-            <!-- Title "Description" -->
+
+            <!-- Titre Description -->
             <TextView
                 android:id="@+id/descriptionTitle"
                 android:layout_width="wrap_content"
@@ -218,31 +225,28 @@
                 android:fontFamily="@font/poppinssemibold"
                 android:layout_marginTop="24dp" />
 
-            <!-- Description text -->
+            <!-- Contenu Description -->
             <TextView
                 android:id="@+id/descriptionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="This beautiful apartment is located in the heart of Los Angeles. It features spacious bedrooms, modern bathrooms, and a cozy atmosphere perfect for any family or individual looking to enjoy city life."
+                android:text="This beautiful apartment is located in the heart of Los Angeles..."
                 android:textSize="14sp"
                 android:textColor="#444444"
                 android:lineSpacingExtra="4dp"
                 android:fontFamily="@font/poppinsmedium" />
 
-
-
         </LinearLayout>
     </ScrollView>
 
-    <!-- Book Now Button -->
+    <!-- Bouton de réservation -->
     <Button
         android:id="@+id/bookNowBtn"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/primary"

@@ -1,30 +1,26 @@
 package com.example.mycolloc.ui.home
 
 import android.Manifest
-import android.app.Activity
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.example.mycolloc.R
-import com.example.mycolloc.viewmodels.HomeViewModel
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.firebase.database.*
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
@@ -32,9 +28,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var settingsClient: SettingsClient
-    private val viewModel: HomeViewModel by activityViewModels()
+
     private val LOCATION_PERMISSION_CODE = 1001
     private val LOCATION_REQUEST_CODE = 2001
+
+    private var userLocation: Location? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +45,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         settingsClient = LocationServices.getSettingsClient(requireActivity())
+
         locationRequest = LocationRequest.create().apply {
             priority = Priority.PRIORITY_HIGH_ACCURACY
             interval = 10000
@@ -92,15 +91,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun getUserLocation() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                showUserAndOffers(location)
+                userLocation = location
+                showUserMarker(location)
+                loadOffersFromFirebase()
             } else {
-                // Fallback : demander une localisation active
                 fusedLocationClient.getCurrentLocation(
                     Priority.PRIORITY_HIGH_ACCURACY,
                     CancellationTokenSource().token
                 ).addOnSuccessListener { newLocation ->
                     if (newLocation != null) {
-                        showUserAndOffers(newLocation)
+                        userLocation = newLocation
+                        showUserMarker(newLocation)
+                        loadOffersFromFirebase()
                     } else {
                         Toast.makeText(requireContext(), "Impossible de récupérer la localisation", Toast.LENGTH_LONG).show()
                     }
@@ -109,36 +111,64 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun showUserAndOffers(location: Location) {
+    private fun showUserMarker(location: Location) {
         val userLatLng = LatLng(location.latitude, location.longitude)
         mMap.clear()
         mMap.addMarker(
             MarkerOptions()
                 .position(userLatLng)
                 .title("Vous êtes ici")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
         )
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 14f))
-
-        viewModel.loadNearbyOffers(location.latitude, location.longitude)
-        observeNearbyOffers()
     }
 
-    private fun observeNearbyOffers() {
-        viewModel.nearbyOffers.observe(viewLifecycleOwner) { offers ->
-            offers.forEach { offer ->
-                val lat = offer.latitude
-                val lon = offer.longitude
-                if (lat != null && lon != null) {
-                    mMap.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(lat, lon))
-                            .title(offer.title)
-                            .snippet("${offer.price} MAD")
-                    )
+    private fun loadOffersFromFirebase() {
+        val dbRef = FirebaseDatabase.getInstance().getReference("offers")
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (child in snapshot.children) {
+                    val lat = child.child("latitude").getValue(Double::class.java)
+                    val lon = child.child("longitude").getValue(Double::class.java)
+                    val title = child.child("title").getValue(String::class.java)
+                    val price = child.child("price").getValue(Double::class.java)
+
+                    if (lat != null && lon != null && title != null && price != null) {
+                        val offerLatLng = LatLng(lat, lon)
+                        val distanceText = calculateDistanceToUser(lat, lon)
+
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(offerLatLng)
+                                .title(title)
+                                .snippet("${price.toInt()} MAD - $distanceText")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                        )
+                    }
                 }
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Erreur chargement des offres", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun calculateDistanceToUser(lat: Double, lon: Double): String {
+        userLocation?.let { userLoc ->
+            val offerLocation = Location("").apply {
+                latitude = lat
+                longitude = lon
+            }
+            val distanceInMeters = userLoc.distanceTo(offerLocation)
+            return if (distanceInMeters >= 1000) {
+                String.format("%.2f km", distanceInMeters / 1000)
+            } else {
+                "${distanceInMeters.toInt()} m"
+            }
         }
+        return "Distance inconnue"
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

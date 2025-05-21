@@ -30,13 +30,15 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:text="Good Morning Christopher,"
+                    android:id="@+id/welcomingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Good Morning ${user.username},"
                     android:textStyle="bold"
                     android:textSize="18sp"
                     android:textColor="@android:color/black"
-                    android:fontFamily="@font/poppinssemibold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:fontFamily="@font/poppinssemibold" />
+
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -52,6 +54,7 @@
                         android:layout_marginEnd="4dp"/>
 
                     <TextView
+                        android:id="@+id/userLocation"
                         android:text="Los Angeles, CA"
                         android:textColor="@color/primary"
                         android:textSize="14sp"
@@ -139,11 +142,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popularRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="200dp"
             android:layout_marginBottom="16dp"
             android:clipToPadding="false"
             android:overScrollMode="never"
             android:paddingBottom="8dp"/>
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

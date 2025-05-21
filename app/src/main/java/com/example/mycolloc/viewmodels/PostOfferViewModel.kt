@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mycolloc.data.local.Location
 import com.example.mycolloc.model.Offer
-import com.example.mycolloc.model.Location
 import com.example.mycolloc.repository.FirebaseRepository
 import com.example.mycolloc.repository.Result
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 sealed class PostOfferUiState {
@@ -17,7 +18,9 @@ sealed class PostOfferUiState {
 }
 
 class PostOfferViewModel : ViewModel() {
+
     private val repository = FirebaseRepository()
+    private val auth = FirebaseAuth.getInstance()
 
     private val _uiState = MutableLiveData<PostOfferUiState>()
     val uiState: LiveData<PostOfferUiState> = _uiState
@@ -27,26 +30,36 @@ class PostOfferViewModel : ViewModel() {
         description: String,
         price: Double,
         category: String,
-        location: Location,
+        location: Location, // ✅ objet Location correct
         images: List<String>
     ) {
         viewModelScope.launch {
             _uiState.value = PostOfferUiState.Loading
-            
-            // Validate input
+
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                _uiState.value = PostOfferUiState.Error("User not authenticated")
+                return@launch
+            }
+
+            // Vérification basique
             if (title.isBlank() || description.isBlank() || price <= 0 || category.isBlank()) {
                 _uiState.value = PostOfferUiState.Error("Please fill all required fields")
                 return@launch
             }
 
+            // ✅ Création de l’offre avec Location complet
             val offer = Offer(
+                userId = currentUser.uid,
                 title = title,
                 description = description,
                 price = price,
                 category = category,
-                location = location.address,
-                latitude = location.latitude,
-                longitude = location.longitude,
+                location = location, // ✅ bon type
+                latitude = location.latitude ?: 0.0,
+                longitude = location.longitude ?: 0.0,
+
+                images = images,
                 isActive = true
             )
 
@@ -58,10 +71,9 @@ class PostOfferViewModel : ViewModel() {
                     _uiState.value = PostOfferUiState.Error(result.exception.message ?: "Failed to create offer")
                 }
                 is Result.RecaptchaRequired -> {
-                    // Since this is just creating an offer, reCAPTCHA shouldn't be required
                     _uiState.value = PostOfferUiState.Error("Unexpected reCAPTCHA requirement")
                 }
             }
         }
     }
-} 
+}

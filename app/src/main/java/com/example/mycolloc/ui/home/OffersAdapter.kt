@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mycolloc.R
 import com.example.mycolloc.databinding.ItemOfferBinding
 import com.example.mycolloc.model.Offer
 import java.text.NumberFormat
@@ -45,13 +46,14 @@ class OffersAdapter(
             binding.apply {
                 offerTitle.text = offer.title
                 offerPrice.text = formatPrice(offer.price)
-                offerLocation.text = offer.location.ifBlank { "Location not specified" }
+                offerLocation.text = offer.location?.city!!.ifBlank { "Location not specified" }
                 offerCategory.text = offer.category.ifBlank { "Uncategorized" }
                 offerDescription.text = offer.description
 
+
                 // TODO: Load offer image using an image loading library like Glide or Coil
                 // For now, we'll just use a placeholder
-                offerImage.setImageResource(android.R.drawable.ic_menu_gallery)
+                offerImage.setImageResource(R.drawable.ic_rentable_house)
             }
         }
 

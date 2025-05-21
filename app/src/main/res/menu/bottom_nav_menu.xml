@@ -2,22 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_home"
+        android:id="@+id/navigation_home"
         android:icon="@drawable/ic_homee"
-        android:title="Home" />
+        android:title="Accueil" />
 
     <item
-        android:id="@+id/nav_explore"
-        android:icon="@drawable/ic_explore"
-        android:title="Explore" />
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/ic_map"
+        android:title="Carte" />
 
     <item
-        android:id="@+id/nav_favourites"
+        android:id="@+id/favoritesOffersFragment"
         android:icon="@drawable/ic_heart_filled"
-        android:title="Favourites" />
+        android:title="Favoris" />
 
     <item
-        android:id="@+id/nav_profile"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profiles"
-        android:title="Profile" />
+        android:title="Profil" />
+
 </menu>
+

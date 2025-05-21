@@ -7,16 +7,60 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.mycolloc.ui.home.HomeFragment"
-        android:label="@string/list_view" />
+        android:label="@string/list_view" >
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_map"
+            app:destination="@id/navigation_map" />
+        <action
+            android:id="@+id/action_navigation_home_to_favoritesOffersFragment"
+            app:destination="@id/favoritesOffersFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_map"
         android:name="com.example.mycolloc.ui.home.MapFragment"
-        android:label="@string/map_view" />
+        android:label="@string/map_view" >
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_home"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_map_to_favoritesOffersFragment"
+            app:destination="@id/favoritesOffersFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.mycolloc.ui.profile.ProfileFragment"
-        android:label="@string/profile" />
+        android:label="@string/profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_home"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_map"
+            app:destination="@id/navigation_map" />
+        <action
+            android:id="@+id/action_navigation_profile_to_favoritesOffersFragment"
+            app:destination="@id/favoritesOffersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoritesOffersFragment"
+        android:name="com.example.mycolloc.ui.post.FavoritesOffersFragment"
+        android:label="FavoritesOffersFragment" >
+        <action
+            android:id="@+id/action_favoritesOffersFragment_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_favoritesOffersFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_favoritesOffersFragment_to_navigation_map"
+            app:destination="@id/navigation_map" />
+    </fragment>
 
 </navigation> 

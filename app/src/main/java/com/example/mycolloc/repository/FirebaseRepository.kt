@@ -186,49 +186,79 @@ class FirebaseRepository {
         Result.Error(e)
     }
 
-    fun getNearbyOffers(latitude: Double, longitude: Double, radiusInKm: Double): Flow<List<Offer>> = flow {
-        try {
-            // Convert radius from km to degrees (approximate)
-            val radiusInDegrees = radiusInKm / 111.0 // 1 degree ≈ 111 km at the equator
+//    fun getNearbyOffers(latitude: Double, longitude: Double, radiusInKm: Double): Flow<List<Offer>> = flow {
+//        try {
+//            // Convert radius from km to degrees (approximate)
+//            val radiusInDegrees = radiusInKm / 111.0 // 1 degree ≈ 111 km at the equator
+//
+//            // Calculate bounding box
+//            val minLat = latitude - radiusInDegrees
+//            val maxLat = latitude + radiusInDegrees
+//            val minLng = longitude - radiusInDegrees
+//            val maxLng = longitude + radiusInDegrees
+//
+//            // Query offers within the bounding box
+//            val offersQuery = offersRef
+//                .orderByChild("location/latitude")
+//                .startAt(minLat)
+//                .endAt(maxLat)
+//                .orderByChild("location/longitude")
+//                .startAt(minLng)
+//                .endAt(maxLng)
+//                .get()
+//
+//            val offers = offersQuery.await().children.mapNotNull { it.getValue<Offer>() }
+//
+//            // Filter offers by actual distance (since bounding box is approximate)
+//            val nearbyOffers = offers.filter { offer ->
+//                val offerLat = offer.latitude
+//                val offerLng = offer.longitude
+//                if (offerLat != null && offerLng != null) {
+//                    val distance = calculateDistance(
+//                        latitude, longitude,
+//                        offerLat, offerLng
+//                    )
+//                    distance <= radiusInKm
+//                } else {
+//                    false
+//                }
+//            }
+//
+//            emit(nearbyOffers)
+//        } catch (e: Exception) {
+//            throw e
+//        }
+//    }
+fun getNearbyOffers(latitude: Double, longitude: Double, radiusInKm: Double): Flow<List<Offer>> = flow {
+    try {
+        val radiusInDegrees = radiusInKm / 111.0
 
-            // Calculate bounding box
-            val minLat = latitude - radiusInDegrees
-            val maxLat = latitude + radiusInDegrees
-            val minLng = longitude - radiusInDegrees
-            val maxLng = longitude + radiusInDegrees
+        val minLat = latitude - radiusInDegrees
+        val maxLat = latitude + radiusInDegrees
 
-            // Query offers within the bounding box
-            val offersQuery = offersRef
-                .orderByChild("location/latitude")
-                .startAt(minLat)
-                .endAt(maxLat)
-                .orderByChild("location/longitude")
-                .startAt(minLng)
-                .endAt(maxLng)
-                .get()
 
-            val offers = offersQuery.await().children.mapNotNull { it.getValue<Offer>() }
+        val snapshot = offersRef
+            .orderByChild("latitude")
+            .startAt(minLat)
+            .endAt(maxLat)
+            .get()
+            .await()
 
-            // Filter offers by actual distance (since bounding box is approximate)
-            val nearbyOffers = offers.filter { offer ->
-                val offerLat = offer.latitude
-                val offerLng = offer.longitude
-                if (offerLat != null && offerLng != null) {
-                    val distance = calculateDistance(
-                        latitude, longitude,
-                        offerLat, offerLng
-                    )
-                    distance <= radiusInKm
-                } else {
-                    false
-                }
-            }
+        val offers = snapshot.children.mapNotNull { it.getValue<Offer>() }
 
-            emit(nearbyOffers)
-        } catch (e: Exception) {
-            throw e
+        val nearbyOffers = offers.filter { offer ->
+            val offerLat = offer.latitude
+            val offerLng = offer.longitude
+            val distance = calculateDistance(latitude, longitude, offerLat, offerLng)
+            distance <= radiusInKm
         }
+
+        emit(nearbyOffers)
+    } catch (e: Exception) {
+        throw e
     }
+}
+
 
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val r = 6371.0 // Earth's radius in kilometers

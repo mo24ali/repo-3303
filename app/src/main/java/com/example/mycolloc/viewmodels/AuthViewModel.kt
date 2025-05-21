@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mycolloc.data.local.Location
 import com.example.mycolloc.model.User
+
 import com.example.mycolloc.repository.FirebaseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -82,7 +84,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun register(email: String, password: String, name: String, phone: String, latitude: Double, longitude: Double) {
+    fun register(email: String, password: String, name: String, phone: String, location: Location) {
         if (!validateRegistrationInput(email, password, name, phone)) return
 
         viewModelScope.launch {
@@ -93,16 +95,17 @@ class AuthViewModel : ViewModel() {
                     val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                     val userId = authResult.user?.uid ?: throw IllegalStateException("User ID is null")
 
-                    // Create user document in Firestore (avec localisation)
+                    // Create user document in Firestore with location
                     val user = User(
                         id = userId,
                         email = email,
                         firstName = name.split(" ").firstOrNull() ?: name,
                         lastName = name.split(" ").drop(1).joinToString(" "),
                         phoneNumber = phone,
-                        latitude = latitude,
-                        longitude = longitude
-                    )
+                        latitude = location.latitude ?: 0.0,
+                        longitude = location.longitude ?: 0.0
+
+                        )
                     repository.createUser(user)
                 }
                 _authState.value = AuthState.Authenticated

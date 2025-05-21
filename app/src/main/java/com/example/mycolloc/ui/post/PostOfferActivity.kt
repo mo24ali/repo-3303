@@ -1,105 +1,145 @@
 package com.example.mycolloc.ui.post
 
-import android.net.Uri
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
-import android.view.MenuItem
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mycolloc.Adapter.SelectedImagesAdapter
-import com.example.mycolloc.databinding.ActivityPostOfferBinding
-import com.example.mycolloc.model.Location
-import com.example.mycolloc.viewmodels.PostOfferUiState
-import com.example.mycolloc.viewmodels.PostOfferViewModel
+import androidx.core.app.ActivityCompat
+import com.example.mycolloc.R
+import com.example.mycolloc.model.Offer
+import com.example.mycolloc.data.local.Location as CustomLocation
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import java.util.*
 
 class PostOfferActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityPostOfferBinding
-    private val viewModel: PostOfferViewModel by viewModels()
 
-    private val selectedImages = mutableListOf<Uri>()
-    private lateinit var imageAdapter: SelectedImagesAdapter
+    private lateinit var titleEditText: EditText
+    private lateinit var descriptionEditText: EditText
+    private lateinit var priceEditText: EditText
+    private lateinit var bedroomEditText: EditText
+    private lateinit var toiletEditText: EditText
+    private lateinit var surfaceEditText: EditText
+    private lateinit var citySpinner: Spinner
+    private lateinit var imagePreview: ImageView
+    private lateinit var postOfferButton: Button
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var userLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPostOfferBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_post_offer)
 
-        setupViews()
-        observeViewModel()
-    }
+        titleEditText = findViewById(R.id.titleEditText)
+        descriptionEditText = findViewById(R.id.descriptionEditText)
+        priceEditText = findViewById(R.id.priceEditText)
+        bedroomEditText = findViewById(R.id.bedroomEditText)
+        toiletEditText = findViewById(R.id.toiletEditText)
+        surfaceEditText = findViewById(R.id.surfaceEditText)
+        citySpinner = findViewById(R.id.citySpinner)
+        imagePreview = findViewById(R.id.imagePreview)
+        postOfferButton = findViewById(R.id.postOfferButton)
 
-    private fun setupViews() {
-        imageAdapter = SelectedImagesAdapter(selectedImages)
-        binding.imagesRecyclerView.apply {
-            layoutManager = LinearLayoutManager(this@PostOfferActivity, LinearLayoutManager.HORIZONTAL, false)
-            adapter = imageAdapter
-        }
+        val cities = listOf("Casablanca", "Rabat", "Marrakech")
+        citySpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, cities)
 
-        binding.addImagesButton.setOnClickListener {
-            imagePickerLauncher.launch("image/*")
-        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        getLastKnownLocation()
 
-        binding.postButton.setOnClickListener {
-            val title = binding.titleEditText.text.toString()
-            val description = binding.descriptionEditText.text.toString()
-            val price = binding.priceEditText.text.toString().toDoubleOrNull() ?: 0.0
-            val images = selectedImages.map { it.toString() }
-
-            val location = Location(
-                latitude = 33.5731,
-                longitude = -7.5898,
-                address = "Casablanca",
-                city = "Casablanca"
-            )
-
-            if (title.isBlank() || description.isBlank() || price <= 0.0) {
-                Toast.makeText(this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            viewModel.createOffer(title, description, price, "Default", location, images)
+        postOfferButton.setOnClickListener {
+            saveOfferToFirebase()
         }
     }
 
-    private fun observeViewModel() {
-        viewModel.uiState.observe(this) { state ->
-            when (state) {
-                is PostOfferUiState.Loading -> {
-                    binding.postButton.isEnabled = false
-                    Toast.makeText(this, "Publication en cours...", Toast.LENGTH_SHORT).show()
-                }
-                is PostOfferUiState.Success -> {
-                    binding.postButton.isEnabled = true
-                    Toast.makeText(this, "Offre publiée avec succès", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-                is PostOfferUiState.Error -> {
-                    binding.postButton.isEnabled = true
-                    Toast.makeText(this, "Erreur : ${state.message}", Toast.LENGTH_LONG).show()
-                }
+    private fun getLastKnownLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 101)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                userLocation = location
+            } else {
+                Toast.makeText(this, "Localisation introuvable", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private val imagePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.GetMultipleContents()
-    ) { uris ->
-        if (!uris.isNullOrEmpty()) {
-            selectedImages.clear()
-            selectedImages.addAll(uris)
-            imageAdapter.notifyDataSetChanged()
+    private fun saveOfferToFirebase() {
+        val title = titleEditText.text.toString()
+        val description = descriptionEditText.text.toString()
+        val price = priceEditText.text.toString().toDoubleOrNull() ?: 0.0
+        val bedrooms = bedroomEditText.text.toString().toIntOrNull() ?: 0
+        val toilets = toiletEditText.text.toString().toIntOrNull() ?: 0
+        val surface = surfaceEditText.text.toString().toDoubleOrNull() ?: 0.0
+
+        if (title.isBlank() || description.isBlank() || price <= 0.0) {
+            Toast.makeText(this, "Please fill in all fields correctly.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val androidLocation = userLocation
+        if (androidLocation == null) {
+            Toast.makeText(this, "Position non disponible. Réessayez.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val addresses = geocoder.getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
+        val city = addresses?.firstOrNull()?.locality ?: "Unknown"
+        val address = addresses?.firstOrNull()?.getAddressLine(0) ?: "Unknown Address"
+
+        val customLocation = CustomLocation(
+
+            city = city,
+            address = address,
+            latitude = androidLocation.latitude,
+            longitude = androidLocation.longitude,
+        )
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "unknown_user"
+        val offerId = UUID.randomUUID().toString()
+
+        val offer = Offer(
+            id = offerId,
+            userId = userId,
+            title = title,
+            description = description,
+            price = price,
+            category = "Apartment",
+            location = customLocation,
+            latitude = customLocation.latitude ?: 0.0,
+            longitude = customLocation.longitude ?: 0.0,
+
+            images = listOf(),
+            isActive = true
+        )
+
+        FirebaseDatabase.getInstance().getReference("offers")
+            .child(offerId)
+            .setValue(offer)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Offre enregistrée avec position et ville !", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Erreur : ${it.message}", Toast.LENGTH_LONG).show()
+            }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressedDispatcher.onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getLastKnownLocation()
+        } else {
+            Toast.makeText(this, "Permission localisation requise", Toast.LENGTH_SHORT).show()
         }
     }
 }

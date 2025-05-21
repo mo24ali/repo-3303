@@ -1,5 +1,6 @@
 package com.example.mycolloc.Adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.mycolloc.R
 import com.example.mycolloc.databinding.ItemOfferBinding
 import com.example.mycolloc.model.Offer
+import com.example.mycolloc.ui.post.EditOfferActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class MyOffersAdapter(
@@ -57,7 +59,11 @@ class MyOffersAdapter(
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_edit -> {
-                    onEditClick?.invoke(offer)
+//                    onEditClick?.invoke(offer)
+                    val intent = Intent(anchor.context, EditOfferActivity::class.java)
+                    intent.putExtra("offer", offer)
+                    anchor.context.startActivity(intent)
+
                     true
                 }
                 R.id.action_delete -> {

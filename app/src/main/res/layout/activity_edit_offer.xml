@@ -12,21 +12,20 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Header -->
+        <!-- Titre de l'écran -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Post New Offer"
-            android:textColor="@android:color/black"
-            android:textSize="28sp"
+            android:text="Edit Offer"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:fontFamily="@font/poppinssemibold"
+            android:textColor="@android:color/black"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp" />
 
-        <!-- Title -->
+        <!-- Champ Titre -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Title">
@@ -37,9 +36,8 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Description -->
+        <!-- Champ Description -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description"
@@ -53,9 +51,8 @@
                 android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Price -->
+        <!-- Champ Prix -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Price (MAD)"
@@ -68,46 +65,11 @@
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- City Spinner -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="City"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppinsmedium" />
-
-        <Spinner
-            android:id="@+id/citySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"
-            android:layout_marginTop="8dp" />
-
-        <!-- Upload Image Placeholder -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Upload House Image"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/poppinsmedium"
-            android:textColor="@android:color/black" />
-
-        <ImageView
-            android:id="@+id/imagePreview"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/image_placeholder_bg"
-            android:contentDescription="Selected Image" />
-
-        <!-- Number of Bedrooms -->
+        <!-- Nombre de chambres -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Number of Bedrooms"
+            android:hint="Bedrooms"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -117,12 +79,11 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Number of Toilets -->
+        <!-- Nombre de toilettes -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Number of Toilets"
+            android:hint="Bathrooms"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -132,9 +93,8 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Surface Area -->
+        <!-- Surface -->
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Surface (m²)"
@@ -147,17 +107,16 @@
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Post Button -->
+        <!-- Bouton de sauvegarde -->
         <Button
             android:id="@+id/btnSaveChanges"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="32dp"
-            android:text="Post Offer"
-            android:textSize="16sp"
+            android:text="Save Changes"
             android:textColor="@android:color/white"
-            android:fontFamily="@font/poppinsmedium"
-            android:backgroundTint="@color/primary" />
-
+            android:backgroundTint="@color/primary"
+            android:textSize="16sp"
+            android:fontFamily="@font/poppinsmedium" />
     </LinearLayout>
 </ScrollView>

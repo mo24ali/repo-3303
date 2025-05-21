@@ -95,7 +95,7 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         layoutManager.initialPrefetchItemCount = 6
 
         binding.popularRecyclerView.apply {

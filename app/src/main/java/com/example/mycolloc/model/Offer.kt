@@ -3,6 +3,7 @@ package com.example.mycolloc.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.mycolloc.data.local.Location
+import java.io.Serializable
 import java.util.UUID
 
 
@@ -22,9 +23,12 @@ data class Offer(
     val imageUrl: String = "",
     val isActive: Boolean = true,
     val location: Location? = null, // 💥 Ici c’est là que l’erreur surgit
+    val bedrooms: Int? = null,
+    val bathrooms: Int? = null,
+    val surface: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
-)
+): Serializable
 
 
 //data class Location(

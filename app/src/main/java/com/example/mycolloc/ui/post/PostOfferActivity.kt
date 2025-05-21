@@ -72,36 +72,100 @@ class PostOfferActivity : AppCompatActivity() {
         }
     }
 
+//    private fun saveOfferToFirebase() {
+//        val title = titleEditText.text.toString()
+//        val description = descriptionEditText.text.toString()
+//        val price = priceEditText.text.toString().toDoubleOrNull() ?: 0.0
+//        val bedrooms = bedroomEditText.text.toString().toIntOrNull() ?: 0
+//        val toilets = toiletEditText.text.toString().toIntOrNull() ?: 0
+//        val surface = surfaceEditText.text.toString().toDoubleOrNull() ?: 0.0
+//
+//        if (title.isBlank() || description.isBlank() || price <= 0.0) {
+//            Toast.makeText(this, "Please fill in all fields correctly.", Toast.LENGTH_SHORT).show()
+//            return
+//        }
+//
+//        val androidLocation = userLocation
+//        if (androidLocation == null) {
+//            Toast.makeText(this, "Position non disponible. Réessayez.", Toast.LENGTH_SHORT).show()
+//            return
+//        }
+//
+//        val geocoder = Geocoder(this, Locale.getDefault())
+//        val addresses = geocoder.getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
+//        val city = addresses?.firstOrNull()?.locality ?: "Unknown"
+//        val address = addresses?.firstOrNull()?.getAddressLine(0) ?: "Unknown Address"
+//
+//        val customLocation = CustomLocation(
+//
+//            city = city,
+//            address = address,
+//            latitude = androidLocation.latitude,
+//            longitude = androidLocation.longitude,
+//        )
+//
+//        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "unknown_user"
+//        val offerId = UUID.randomUUID().toString()
+//
+//        val offer = Offer(
+//            id = offerId,
+//            userId = userId,
+//            title = title,
+//            description = description,
+//            price = price,
+//            category = "Apartment",
+//            location = customLocation,
+//            latitude = customLocation.latitude ?: 0.0,
+//            longitude = customLocation.longitude ?: 0.0,
+//            bedrooms = bedrooms,
+//            toilets = toilets,
+//            surface = surface
+//            images = listOf(),
+//            isActive = true
+//        )
+//
+//        FirebaseDatabase.getInstance().getReference("offers")
+//            .child(offerId)
+//            .setValue(offer)
+//            .addOnSuccessListener {
+//                Toast.makeText(this, "Offre enregistrée avec position et ville !", Toast.LENGTH_SHORT).show()
+//                finish()
+//            }
+//            .addOnFailureListener {
+//                Toast.makeText(this, "Erreur : ${it.message}", Toast.LENGTH_LONG).show()
+//            }
+//    }
+
+
     private fun saveOfferToFirebase() {
         val title = titleEditText.text.toString()
         val description = descriptionEditText.text.toString()
         val price = priceEditText.text.toString().toDoubleOrNull() ?: 0.0
-        val bedrooms = bedroomEditText.text.toString().toIntOrNull() ?: 0
-        val toilets = toiletEditText.text.toString().toIntOrNull() ?: 0
-        val surface = surfaceEditText.text.toString().toDoubleOrNull() ?: 0.0
+        val bedrooms = bedroomEditText.text.toString().toIntOrNull()
+        val bathrooms = toiletEditText.text.toString().toIntOrNull()
+        val surface = surfaceEditText.text.toString()
 
         if (title.isBlank() || description.isBlank() || price <= 0.0) {
-            Toast.makeText(this, "Please fill in all fields correctly.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Veuillez remplir tous les champs correctement", Toast.LENGTH_SHORT).show()
             return
         }
 
         val androidLocation = userLocation
         if (androidLocation == null) {
-            Toast.makeText(this, "Position non disponible. Réessayez.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Localisation introuvable", Toast.LENGTH_SHORT).show()
             return
         }
 
         val geocoder = Geocoder(this, Locale.getDefault())
-        val addresses = geocoder.getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
-        val city = addresses?.firstOrNull()?.locality ?: "Unknown"
-        val address = addresses?.firstOrNull()?.getAddressLine(0) ?: "Unknown Address"
+        val addressList = geocoder.getFromLocation(androidLocation.latitude, androidLocation.longitude, 1)
+        val city = addressList?.firstOrNull()?.locality ?: "Ville inconnue"
+        val address = addressList?.firstOrNull()?.getAddressLine(0) ?: "Adresse inconnue"
 
-        val customLocation = CustomLocation(
-
+        val customLocation = com.example.mycolloc.data.local.Location(
             city = city,
             address = address,
             latitude = androidLocation.latitude,
-            longitude = androidLocation.longitude,
+            longitude = androidLocation.longitude
         )
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "unknown_user"
@@ -114,19 +178,22 @@ class PostOfferActivity : AppCompatActivity() {
             description = description,
             price = price,
             category = "Apartment",
-            location = customLocation,
-            latitude = customLocation.latitude ?: 0.0,
-            longitude = customLocation.longitude ?: 0.0,
-
+            latitude = androidLocation.latitude,
+            longitude = androidLocation.longitude,
             images = listOf(),
-            isActive = true
+            imageUrl = "",
+            isActive = true,
+            location = customLocation,
+            bedrooms = bedrooms,
+            bathrooms = bathrooms,
+            surface = surface
         )
 
         FirebaseDatabase.getInstance().getReference("offers")
             .child(offerId)
             .setValue(offer)
             .addOnSuccessListener {
-                Toast.makeText(this, "Offre enregistrée avec position et ville !", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Offre enregistrée avec succès", Toast.LENGTH_SHORT).show()
                 finish()
             }
             .addOnFailureListener {

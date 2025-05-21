@@ -11,13 +11,12 @@
         android:id="@+id/titleMyBids"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="My Bids"
-        android:textSize="22sp"
-        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
         android:fontFamily="@font/poppinssemibold"
+        android:text="My Offers"
         android:textColor="@android:color/black"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:textSize="22sp"
+        android:textStyle="bold" />
 
     <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView

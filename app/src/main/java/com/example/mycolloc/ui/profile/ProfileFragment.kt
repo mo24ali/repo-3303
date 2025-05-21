@@ -74,9 +74,9 @@ class ProfileFragment : Fragment() {
             startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.MyOfffersActivity::class.java))
         }
 
-        binding.root.findViewById<View>(R.id.myOffersButton).setOnClickListener {
-            startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.activity_my_bids::class.java))
-        }
+//        binding.root.findViewById<View>(R.id.myOffersButton).setOnClickListener {
+//            startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.activity_my_bids::class.java))
+//        }
 
         binding.editProfile.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.EditProfileActivity::class.java))

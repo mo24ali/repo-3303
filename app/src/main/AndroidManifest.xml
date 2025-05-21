@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
         <activity
+            android:name=".ui.post.EditOfferActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.ForgetPasswordActivity"
             android:exported="false" />
         <activity

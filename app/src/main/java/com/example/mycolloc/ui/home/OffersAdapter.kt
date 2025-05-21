@@ -44,7 +44,7 @@ class OffersAdapter(
 
         fun bind(offer: Offer) {
             binding.apply {
-                offerTitle.text = offer.title
+                //offerTitle.text = offer.title
                 offerPrice.text = formatPrice(offer.price)
                 offerLocation.text = offer.location?.city!!.ifBlank { "Location not specified" }
                 offerCategory.text = offer.category.ifBlank { "Uncategorized" }

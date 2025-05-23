@@ -1,60 +1,73 @@
 package com.example.mycolloc.ui.post
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.mycolloc.R
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.mycolloc.Adapter.OffersAdapter
+import com.example.mycolloc.databinding.FragmentFavoritesOffersBinding
+import com.example.mycolloc.model.Offer
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FavoritesOffersFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FavoritesOffersFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentFavoritesOffersBinding
+    private lateinit var adapter: OffersAdapter
+    private val database = FirebaseDatabase.getInstance()
+    private val currentUser = FirebaseAuth.getInstance().currentUser
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites_offers, container, false)
+    ): View {
+        binding = FragmentFavoritesOffersBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FavoritesOffersFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FavoritesOffersFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        adapter = OffersAdapter(
+            onClick = { offer ->
+                // TODO: Gérer le clic sur une offre favorite (détails)
+            },
+            isMyOffersContext = false
+        )
+
+        binding.favoritesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.favoritesRecyclerView.adapter = adapter
+
+        loadFavorites()
+    }
+
+    private fun loadFavorites() {
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), "Non connecté", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val ref = database.getReference("favorites").child(currentUser.uid)
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val favorites = snapshot.children.mapNotNull { it.getValue(Offer::class.java) }
+
+                if (favorites.isEmpty()) {
+                    binding.favoritesRecyclerView.visibility = View.GONE
+                    binding.emptyStateLayout.visibility = View.VISIBLE
+                } else {
+                    binding.favoritesRecyclerView.visibility = View.VISIBLE
+                    binding.emptyStateLayout.visibility = View.GONE
+                    adapter.submitList(favorites)
                 }
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Erreur : ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

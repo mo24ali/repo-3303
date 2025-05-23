@@ -27,18 +27,11 @@
         <activity
             android:name=".ui.profile.MyOfffersActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.profile.EditProfileActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ui.profile.activity_my_bids"
             android:exported="false" />
-        <activity
-            android:name=".ui.auth.activity_edit_password"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.AdminDahboardActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ui.post.activity_user_bids"
             android:exported="false" />
@@ -63,7 +56,7 @@
         <activity android:name=".ui.details.DetailsArticleActivity" />
         <activity android:name=".ui.auth.LoginActivity" />
         <activity android:name=".ui.auth.SignupActivity" />
-        <activity android:name=".ui.auth.ProfileActivity" />
+        <activity android:name=".ui.admin.AdminDashboardActivity" />
     </application>
 
 </manifest>

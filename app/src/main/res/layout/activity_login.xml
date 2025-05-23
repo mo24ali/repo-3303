@@ -24,7 +24,7 @@
             android:text="Welcome Back"
             android:textColor="@android:color/black"
             android:fontFamily="@font/poppinssemibold"
-            android:textSize="28sp"
+            android:textSize="25sp"
             android:gravity="center_horizontal" />
 
         <!-- Subtitle -->
@@ -37,16 +37,16 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/poppinsmedium"
             android:gravity="center_horizontal"
-            android:text="Please Log in to your Account"
+            android:text="Connectez-vous à votre compte"
             android:textColor="@color/primary"
-            android:textSize="22sp" />
+            android:textSize="18sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/emailLayout"
             style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email or Phone"
+            android:hint="Email "
             android:layout_marginTop="32dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -62,7 +62,7 @@
             style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="Mot de passe"
             android:layout_marginTop="16dp"
             app:passwordToggleEnabled="true">
 
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginTop="8dp"
-            android:text="Forgot password?"
+            android:text="Mot de passe oublié ?"
             android:fontFamily="@font/poppinsmedium"
             android:textColor="@android:color/black"
             android:textSize="14sp"
@@ -95,7 +95,7 @@
             android:layout_marginTop="24dp"
             android:fontFamily="@font/poppinsmedium"
             android:padding="12dp"
-            android:text="Log in"
+            android:text="Se connecter"
             android:backgroundTint="@color/primary"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
@@ -111,7 +111,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account ? "
+                android:text="Vous n'avez pas de compte ? "
                 android:fontFamily="@font/poppinsmedium"
                 android:textColor="@android:color/black"
                 android:textSize="14sp" />
@@ -120,7 +120,7 @@
                 android:id="@+id/signUpLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign Up"
+                android:text="Créer un compte"
                 android:fontFamily="@font/poppinsmedium"
                 android:textColor="@color/primary"
                 android:textSize="14sp"

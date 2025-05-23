@@ -5,7 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:padding="24dp">
+    android:padding="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mes Annonces"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:fontFamily="@font/poppinssemibold"
+            android:layout_marginBottom="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#DDDDDD" />
+    </LinearLayout>
 
     <!-- RecyclerView for displaying user's offers -->
     <androidx.recyclerview.widget.RecyclerView
@@ -36,7 +59,7 @@
             android:id="@+id/emptyMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No post published"
+            android:text="Aucune annonce publiée"
             android:textSize="20sp"
             android:textColor="#888888"
             android:layout_marginTop="16dp"

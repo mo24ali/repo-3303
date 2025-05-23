@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,13 +77,25 @@ class AuthViewModel : ViewModel() {
                 withContext(Dispatchers.IO) {
                     auth.signInWithEmailAndPassword(email, password).await()
                 }
-                // Sign in successful, fetch user data
-                auth.currentUser?.let { fetchUserData(it.uid) }
+
+                // ✅ Connexion réussie → mettre à jour enLigne = true
+                auth.currentUser?.let { user ->
+                    updateEnLigneStatus(user.uid, true)
+                    fetchUserData(user.uid)
+                }
+
             } catch (e: Exception) {
                 handleAuthError(e)
             }
         }
     }
+
+    private fun updateEnLigneStatus(userId: String, isOnline: Boolean) {
+        val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
+        userRef.child("enLigne").setValue(isOnline)
+    }
+
+
 
     fun register(email: String, password: String, name: String, phone: String, location: Location) {
         if (!validateRegistrationInput(email, password, name, phone)) return
@@ -119,16 +132,29 @@ class AuthViewModel : ViewModel() {
     fun signOut() {
         viewModelScope.launch {
             try {
+                val userId = auth.currentUser?.uid
+
+                // ✅ 1. Mettre enLigne = false AVANT de se déconnecter
+                if (userId != null) {
+                    val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                    userRef.child("enLigne").setValue(false).await()
+                }
+
+                // ✅ 2. Déconnexion
                 withContext(Dispatchers.IO) {
                     auth.signOut()
                 }
+
+                // ✅ 3. Réinitialiser l’état local
                 _currentUser.value = null
                 _authState.value = AuthState.SignedOut
+
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Failed to sign out: ${e.message}")
             }
         }
     }
+
 
     fun resetPassword(email: String) {
         if (!validateEmail(email)) {

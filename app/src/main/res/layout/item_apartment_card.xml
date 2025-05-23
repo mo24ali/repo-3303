@@ -53,10 +53,11 @@
 
                 <ImageView
                     android:id="@+id/more"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_more_vert"
+                    android:src="@drawable/menushowmore"
+                    app:tint="@color/primary"
                     />
             </RelativeLayout>
 
@@ -82,16 +83,6 @@
                 android:layout_marginTop="2dp"
                 android:fontFamily="@font/poppinsmedium" />
 
-            <!-- Détails -->
-            <TextView
-                android:id="@+id/features"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="100 m · 2 Bedrooms · 2 Bathrooms"
-                android:textSize="12sp"
-                android:textColor="#444444"
-                android:layout_marginTop="6dp"
-                android:fontFamily="@font/poppinsmedium" />
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -16,13 +16,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Admin Dashboard"
+            android:text="Tableau de bord "
             android:textSize="22sp"
             android:textStyle="bold"
             android:fontFamily="@font/poppinssemibold"
             android:textColor="@android:color/black"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="16dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"
+            android:background="#DDDDDD" />
 
         <!-- Stats Grid -->
         <GridLayout
@@ -49,7 +54,7 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="Total Users"
+                        android:text="Utilisateurs inscrits"
                         android:textSize="14sp"
                         android:textColor="#888"
                         android:fontFamily="@font/poppinsmedium"
@@ -85,7 +90,7 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="Total Offers"
+                        android:text="Offres publiées"
                         android:textSize="14sp"
                         android:textColor="#888"
                         android:fontFamily="@font/poppinsmedium"
@@ -121,7 +126,7 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="Total Bids"
+                        android:text="Offres proposées"
                         android:textSize="14sp"
                         android:textColor="#888"
                         android:fontFamily="@font/poppinsmedium"
@@ -157,7 +162,7 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:text="Active Users"
+                        android:text="Utilisateurs en ligne"
                         android:textSize="14sp"
                         android:textColor="#888"
                         android:fontFamily="@font/poppinsmedium"
@@ -204,7 +209,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Log out"
+                    android:text="Se déconnecter"
                     android:textSize="16sp"
                     android:fontFamily="@font/poppinsmedium"
                     android:textColor="@color/primary"

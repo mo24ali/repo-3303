@@ -5,23 +5,22 @@ import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mycolloc.databinding.ActivityMyOfffersBinding
-import com.example.mycolloc.model.Offer
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import androidx.recyclerview.widget.RecyclerView
-import com.example.mycolloc.R
 import com.bumptech.glide.Glide
 import com.example.mycolloc.Adapter.MyOffersAdapter
+import com.example.mycolloc.R
+import com.example.mycolloc.databinding.ActivityMyOfffersBinding
+import com.example.mycolloc.model.Offer
 import com.example.mycolloc.ui.post.EditOfferActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class MyOfffersActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMyOfffersBinding
     private lateinit var adapter: MyOffersAdapter
-    private lateinit var database: DatabaseReference
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,19 +29,16 @@ class MyOfffersActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         adapter = MyOffersAdapter(
-            onMenuClick = { offer, anchorView -> showPopupMenu(offer, anchorView) },
+            onMenuClick = { offer, anchor -> showPopupMenu(offer, anchor) },
             onEditClick = { offer ->
                 val intent = Intent(this, EditOfferActivity::class.java)
-                intent.putExtra("offerId", offer.id)
+                intent.putExtra("offer", offer) // Serializable
                 startActivity(intent)
             },
             onDeleteClick = { offer ->
-                FirebaseDatabase.getInstance().getReference("offers").child(offer.id).removeValue()
-                Toast.makeText(this, "Offre supprimée", Toast.LENGTH_SHORT).show()
+                confirmDeleteOffer(offer)
             }
         )
-
-
 
         binding.myOffersRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.myOffersRecyclerView.adapter = adapter
@@ -51,7 +47,7 @@ class MyOfffersActivity : AppCompatActivity() {
     }
 
     private fun fetchUserOffers() {
-        database = FirebaseDatabase.getInstance().getReference("offers")
+        val database = FirebaseDatabase.getInstance().getReference("offers")
         database.orderByChild("userId").equalTo(currentUserId)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -61,7 +57,6 @@ class MyOfffersActivity : AppCompatActivity() {
                         if (offer != null) list.add(offer)
                     }
 
-                    // 🔄 Mise à jour UI en fonction du contenu
                     if (list.isEmpty()) {
                         binding.myOffersRecyclerView.visibility = View.GONE
                         binding.emptyStateLayout.visibility = View.VISIBLE
@@ -78,24 +73,42 @@ class MyOfffersActivity : AppCompatActivity() {
             })
     }
 
+    private fun confirmDeleteOffer(offer: Offer) {
+        AlertDialog.Builder(this)
+            .setTitle("Supprimer l'offre")
+            .setMessage("Voulez-vous vraiment supprimer \"${offer.title}\" ?")
+            .setPositiveButton("Supprimer") { _, _ ->
+                FirebaseDatabase.getInstance().getReference("offers")
+                    .child(offer.id)
+                    .removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Offre supprimée", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Annuler", null)
+            .show()
+    }
+
     private fun showPopupMenu(offer: Offer, anchor: View) {
         val popup = PopupMenu(this, anchor)
         popup.menuInflater.inflate(R.menu.menu_offer_actions, popup.menu)
+
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_edit -> {
-                    Toast.makeText(this, "Modifier ${offer.title}", Toast.LENGTH_SHORT).show()
-                    // TODO: Lancer EditOfferActivity avec offer.id
+                    val intent = Intent(this, EditOfferActivity::class.java)
+                    intent.putExtra("offerID", offer.id)
+                    startActivity(intent)
                     true
                 }
                 R.id.action_delete -> {
-                    FirebaseDatabase.getInstance().getReference("offers").child(offer.id).removeValue()
-                    Toast.makeText(this, "Offre supprimée", Toast.LENGTH_SHORT).show()
+                    confirmDeleteOffer(offer)
                     true
                 }
                 R.id.action_details -> {
-                    Toast.makeText(this, "Détails de ${offer.title}", Toast.LENGTH_SHORT).show()
-                    // TODO: Lancer DetailsActivity
+                    val intent = Intent(this, activity_my_bids::class.java)
+                    intent.putExtra("offerId", offer.id)
+                    startActivity(intent)
                     true
                 }
                 else -> false

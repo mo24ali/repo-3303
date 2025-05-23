@@ -11,13 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="User Bids"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:textColor="@color/primary"
         android:fontFamily="@font/poppinssemibold"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bidsRecyclerView"

@@ -11,10 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.mycolloc.R
 import com.example.mycolloc.data.local.AppDatabase
 import com.example.mycolloc.databinding.FragmentProfileBinding
-import com.example.mycolloc.ui.auth.activity_edit_password
 import com.example.mycolloc.viewmodels.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -66,21 +64,16 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(), "Déconnecté", Toast.LENGTH_SHORT).show()
         }
 
-        binding.settingsButton.setOnClickListener {
-            startActivity(Intent(requireContext(), activity_edit_password::class.java))
-        }
 
         binding.myOffersButton.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.MyOfffersActivity::class.java))
         }
 
-//        binding.root.findViewById<View>(R.id.myOffersButton).setOnClickListener {
-//            startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.activity_my_bids::class.java))
-//        }
-
-        binding.editProfile.setOnClickListener {
-            startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.EditProfileActivity::class.java))
+        binding.showb.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.mycolloc.ui.profile.activity_my_bids::class.java))
         }
+
+
     }
 
 

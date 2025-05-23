@@ -45,7 +45,7 @@
                     android:id="@+id/profileImage"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:src="@drawable/userr"
+                    android:src="@drawable/acount"
                     android:scaleType="centerCrop"
                     android:layout_alignParentStart="true"
                     android:clipToOutline="true" />
@@ -86,16 +86,7 @@
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/editProfile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Edit"
-                    android:textColor="@color/primary"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/poppinsmedium"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignTop="@id/profileImage" />
+
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
@@ -118,7 +109,7 @@
 
                 <!-- My Articles -->
                 <LinearLayout
-
+                    android:id="@+id/showb"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="8dp"
@@ -153,18 +144,20 @@
                         app:tint="@color/black" />
                 </LinearLayout>
 
+
+                <!-- Logout -->
                 <LinearLayout
                     android:id="@+id/myOffersButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:background="@drawable/border_setting_item"
                     android:layout_marginTop="8dp"
+                    android:background="@drawable/border_setting_item"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
 
                     <ImageView
                         android:layout_width="24dp"
@@ -177,55 +170,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
+                        android:fontFamily="@font/poppinsmedium"
                         android:text="My Offers"
-                        android:textSize="16sp"
                         android:textColor="@android:color/black"
-                        android:fontFamily="@font/poppinsmedium" />
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        app:tint="@color/black"
-                        android:src="@drawable/flesh_right" />
+                        android:src="@drawable/flesh_right"
+                        app:tint="@color/black" />
                 </LinearLayout>
 
-                <!-- Edit Password -->
-                <LinearLayout
-                    android:id="@+id/settingsButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:background="@drawable/border_setting_item"
-                    android:layout_marginTop="8dp"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/security"
-                        app:tint="@android:color/black" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_weight="1"
-                        android:text="Edit Password"
-                        android:textSize="16sp"
-                        android:textColor="@android:color/black"
-                        android:fontFamily="@font/poppinsmedium" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        app:tint="@color/black"
-                        android:src="@drawable/flesh_right" />
-                </LinearLayout>
-                <!-- Logout -->
                 <LinearLayout
                     android:id="@+id/logoutButton"
                     android:layout_width="match_parent"

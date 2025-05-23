@@ -17,12 +17,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Post New Offer"
-            android:textColor="@android:color/black"
+            android:textColor="@color/primary"
             android:textSize="28sp"
             android:textStyle="bold"
             android:fontFamily="@font/poppinssemibold"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="20dp"
+            android:background="#DDDDDD" />
 
         <!-- Title -->
         <com.google.android.material.textfield.TextInputLayout
@@ -79,6 +84,21 @@
 
         <Spinner
             android:id="@+id/citySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"
+            android:layout_marginTop="8dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppinsmedium" />
+
+
+        <Spinner
+            android:id="@+id/typeestate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown"

@@ -4,7 +4,7 @@
     android:id="@+id/homeScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
+    android:padding="12dp"
     android:background="@android:color/white"
     android:fillViewport="true">
 
@@ -33,7 +33,7 @@
                     android:id="@+id/welcomingText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Good Morning ${user.username},"
+                    android:text="Bonjour  ${user.username},"
                     android:textStyle="bold"
                     android:textSize="18sp"
                     android:textColor="@android:color/black"
@@ -63,16 +63,6 @@
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
-
-            <!-- RIGHT: Notification Icon -->
-            <ImageView
-                android:id="@+id/notificationIcon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
-                android:background="@drawable/rounded_icon_bg"
-                android:src="@drawable/ic_notification"
-                app:tint="@color/primary"/>
         </LinearLayout>
 
 
@@ -103,7 +93,7 @@
                     android:id="@+id/searchEditText"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:hint="Search Street, Locality, Address"
+                    android:hint="Rechercher par Ville"
                     android:textSize="14sp"
                     android:background="@null"
                     android:inputType="text"
@@ -119,7 +109,7 @@
             android:layout_marginBottom="8dp">
 
             <TextView
-                android:text="Popular nearest you"
+                android:text="Populaires près de chez vous"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/poppinssemibold"
@@ -128,14 +118,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <TextView
-                android:text="See All"
-                android:textSize="14sp"
-                android:fontFamily="@font/poppinsmedium"
-                android:textColor="@color/primary"
-                android:gravity="end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <!-- RecyclerView Horizontal -->

@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mycolloc.databinding.FragmentHomeBinding
@@ -103,6 +104,15 @@ class HomeFragment : Fragment() {
             adapter = offersAdapter
             setHasFixedSize(true)
             recycledViewPool.setMaxRecycledViews(0, 10)
+        }
+
+        binding.searchEditText.addTextChangedListener { editable ->
+            val query = editable.toString().trim()
+            if (query.isNotEmpty()) {
+                searchOffersByCity(query)
+            } else {
+                fetchAllOffersFromFirebase()
+            }
         }
     }
 

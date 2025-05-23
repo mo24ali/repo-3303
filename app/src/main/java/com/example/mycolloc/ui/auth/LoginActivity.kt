@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mycolloc.R
 import com.example.mycolloc.databinding.ActivityLoginBinding
+import com.example.mycolloc.ui.admin.AdminDashboardActivity
 import com.example.mycolloc.ui.home.HomeActivity
 import com.example.mycolloc.viewmodels.AuthState
 import com.example.mycolloc.viewmodels.AuthViewModel
@@ -33,6 +34,11 @@ class LoginActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             val email = binding.emailEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
+            if (email == "admin@admin.com" && password == "admin") {
+                startActivity(Intent(this, AdminDashboardActivity::class.java))
+                finish()
+                return@setOnClickListener
+            }
 
             if (validateInput(email, password)) {
                 viewModel.signIn(email, password)
@@ -41,6 +47,9 @@ class LoginActivity : AppCompatActivity() {
 
         binding.signUpLink.setOnClickListener {
             startActivity(Intent(this,SignupActivity::class.java))
+        }
+        binding.forgotPassword.setOnClickListener {
+            startActivity(Intent(this,ForgetPasswordActivity::class.java))
         }
     }
 

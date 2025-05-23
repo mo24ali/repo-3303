@@ -19,7 +19,7 @@ class EditOfferActivity : AppCompatActivity() {
         binding = ActivityEditOfferBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        offerId = intent.getStringExtra("offer_id") ?: run {
+        offerId = intent.getStringExtra("offerId") ?: run {
             finish()
             return
         }

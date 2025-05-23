@@ -2,6 +2,7 @@ package com.example.mycolloc.Adapter
 
 import android.view.*
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -37,52 +38,66 @@ class OffersAdapter(
             val database = FirebaseDatabase.getInstance()
 
             binding.offerPrice.text = "${offer.price.toInt()} MAD"
+            binding.offerCategory.text = offer.category
+            binding.offerLocation.text = offer.title
 
             Glide.with(context)
                 .load(offer.imageUrl.ifEmpty { R.drawable.ic_rentable_house })
                 .into(binding.offerImage)
 
+            // === ❤️ GESTION FAVORIS (hors mode "mes offres") ===
             if (isMyOffersContext) {
-                // 🟦 Afficher bouton menu (3 points) pour modifier/supprimer
                 binding.btnFavorite.visibility = View.GONE
-                binding.btnMore.visibility = View.VISIBLE
-                binding.btnMore.setOnClickListener {
-                    //showPopupMenu(it, offer)
-                }
+                binding.btnMore.visibility = View.GONE // aucune action menu ici
             } else {
-                // ❤️ Favoris : visible si ce n'est PAS le mode "mes offres"
                 binding.btnFavorite.visibility = View.VISIBLE
                 binding.btnMore.visibility = View.GONE
 
                 if (currentUser != null) {
-                    val favoritesRef = database.getReference("favorites")
+                    val favRef = database.getReference("favorites")
                         .child(currentUser.uid)
                         .child(offer.id)
 
-                    favoritesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    favRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            val icon = if (snapshot.exists()) {
+                            var isFavorite = snapshot.exists()
+                            val icon = if (isFavorite) {
                                 R.drawable.ic_heart_filled
                             } else {
                                 R.drawable.ic_heart_outlined
                             }
                             binding.btnFavorite.setImageResource(icon)
+
+                            binding.btnFavorite.setOnClickListener {
+                                isFavorite = !isFavorite
+                                if (isFavorite) {
+                                    favRef.setValue(offer).addOnSuccessListener {
+                                        binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
+                                        Toast.makeText(context, "Ajouté aux favoris", Toast.LENGTH_SHORT).show()
+                                    }
+                                } else {
+                                    favRef.removeValue().addOnSuccessListener {
+                                        binding.btnFavorite.setImageResource(R.drawable.ic_heart_outlined)
+                                        Toast.makeText(context, "Retiré des favoris", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
                         }
 
                         override fun onCancelled(error: DatabaseError) {}
                     })
-
+                } else {
                     binding.btnFavorite.setOnClickListener {
-                        favoritesRef.setValue(offer).addOnSuccessListener {
-                            binding.btnFavorite.setImageResource(R.drawable.ic_heart_filled)
-                        }
+                        Toast.makeText(context, "Veuillez vous connecter pour ajouter aux favoris", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
 
-
+            // 🎯 Clic général sur l’offre
             binding.root.setOnClickListener { onClick(offer) }
         }
+
+
 
 
     }

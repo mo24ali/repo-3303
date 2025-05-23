@@ -1,7 +1,6 @@
 package com.example.mycolloc.Adapter
 
 import android.view.*
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,7 +16,7 @@ class OffersAdapter(
     private val onClick: (Offer) -> Unit,
     private val isMyOffersContext: Boolean = false,
 
-) : ListAdapter<Offer, OffersAdapter.OfferViewHolder>(OfferDiffCallback()) {
+    ) : ListAdapter<Offer, OffersAdapter.OfferViewHolder>(OfferDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OfferViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -92,6 +91,15 @@ class OffersAdapter(
                     }
                 }
             }
+
+//            binding.btnMore.setOnClickListener {
+//                val context = binding.root.context
+//                val intent = Intent(context, EditOfferActivity::class.java).apply {
+//                    putExtra("offerId", offer.id)
+//                }
+//                context.startActivity(intent)
+//            }
+
 
             // 🎯 Clic général sur l’offre
             binding.root.setOnClickListener { onClick(offer) }

@@ -53,12 +53,14 @@
 
                 <!-- Bouton Favoris ❤️ -->
                 <ImageView
-                    android:id="@+id/btnFavorite"
+                        android:id="@+id/btnFavorite"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="4dp"
                     android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_heart_outlined"
                     android:visibility="visible" />
 

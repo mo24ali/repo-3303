@@ -6,8 +6,6 @@ import com.example.mycolloc.data.local.Location
 import java.io.Serializable
 import java.util.UUID
 
-
-
 @Entity(tableName = "offers")
 data class Offer(
     @PrimaryKey
@@ -19,17 +17,37 @@ data class Offer(
     val category: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val images: List<String> = emptyList(), // même si vide, Firebase accepte une liste
+    val images: List<String> = emptyList(),
     val imageUrl: String = "",
     val isActive: Boolean = true,
-    val location: Location? = null, // 💥 Ici c’est là que l’erreur surgit
-    val bedrooms: Int? = null,
-    val bathrooms: Int? = null,
-    val surface: String? = null,
+    val location: Location = Location(),
+    val bedrooms: Int = 0,
+    val bathrooms: Int = 0,
+    val surface: String = "",
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
-): Serializable
-
+): Serializable {
+    // Empty constructor for Firebase
+    constructor() : this(
+        id = "",
+        userId = "",
+        title = "",
+        description = "",
+        price = 0.0,
+        category = "",
+        latitude = 0.0,
+        longitude = 0.0,
+        images = emptyList(),
+        imageUrl = "",
+        isActive = true,
+        location = Location(),
+        bedrooms = 0,
+        bathrooms = 0,
+        surface = "",
+        createdAt = System.currentTimeMillis(),
+        updatedAt = System.currentTimeMillis()
+    )
+}
 
 //data class Location(
 //    val latitude: Double = 0.0,

@@ -36,8 +36,9 @@
             android:id="@+id/emptyMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No favorite offers yet"
-            android:textSize="20sp"
+            android:text="Aucune offre favorite pour le moment"
+            android:textSize="18sp"
+            android:textAlignment="center"
             android:textColor="@color/primary"
             android:fontFamily="@font/poppinsmedium"
             android:layout_marginTop="16dp" />

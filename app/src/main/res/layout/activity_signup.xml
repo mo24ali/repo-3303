@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Account"
+            android:text="Créer un compte"
             android:textColor="@android:color/black"
             android:textSize="28sp"
             android:textStyle="bold"
@@ -28,7 +28,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please fill the form to continue"
+            android:text="Veuillez remplir le formulaire pour continuer"
             android:textColor="@color/primary"
             android:textSize="16sp"
             android:fontFamily="@font/poppinsmedium"
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Full Name"
+            android:hint="Nom complet"
             style="@style/Widget.ColoColo.TextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Phone Number"
+            android:hint="Numéro de téléphone"
             style="@style/Widget.ColoColo.TextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -85,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Password"
+            android:hint="Mot de passe"
             style="@style/Widget.ColoColo.TextInputLayout"
             app:passwordToggleEnabled="true">
 
@@ -101,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Confirm Password"
+            android:hint="Confirmer le mot de passe"
             style="@style/Widget.ColoColo.TextInputLayout"
             app:passwordToggleEnabled="true">
 
@@ -118,7 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="32dp"
-            android:text="Sign Up"
+            android:text="S'inscrire"
             android:textSize="16sp"
             android:textColor="@android:color/white"
             android:fontFamily="@font/poppinsmedium"
@@ -135,7 +135,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Already have an account? "
+                android:text="Vous avez déjà un compte ?"
                 android:textColor="@android:color/black"
                 android:textSize="14sp"
                 android:fontFamily="@font/poppinsmedium" />
@@ -144,7 +144,7 @@
                 android:id="@+id/loginLink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Log in"
+                android:text=" Se connecter"
                 android:textColor="@color/primary"
                 android:textSize="14sp"
                 android:textStyle="bold"

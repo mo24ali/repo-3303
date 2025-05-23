@@ -33,7 +33,7 @@ class OfferBidsAdapter(
     override fun onBindViewHolder(holder: BidViewHolder, position: Int) {
         val bid = bids[position]
 
-        holder.binding.offerAmount.text = "Offered: ${bid.amount} MAD"
+        holder.binding.offerAmount.text = "Proposé : ${bid.amount} MAD"
         holder.binding.bidTime.text = getTimeAgo(bid.timestamp)
 
         Glide.with(context)

@@ -124,8 +124,8 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/bids"
-                        app:tint="@android:color/black" />
+                        android:src="@drawable/mybids"
+                        app:tint="@color/primary" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -133,7 +133,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppinsmedium"
-                        android:text="My Bids"
+                        android:text="Mes Propositions"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
@@ -162,8 +162,8 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/offers"
-                        app:tint="@android:color/black" />
+                        android:src="@drawable/mesanounces"
+                        app:tint="@color/primary" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -171,7 +171,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/poppinsmedium"
-                        android:text="My Offers"
+                        android:text="Mes Annonces"
                         android:textColor="@android:color/black"
                         android:textSize="16sp" />
 
@@ -198,15 +198,15 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/logout_ic"
-                        app:tint="@color/black" />
+                        android:src="@drawable/ic_logout"
+                        app:tint="@color/primary" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Logout"
+                        android:text="Se deconnecter"
                         android:textSize="16sp"
                         android:textColor="@color/black"
                         android:fontFamily="@font/poppinsmedium" />

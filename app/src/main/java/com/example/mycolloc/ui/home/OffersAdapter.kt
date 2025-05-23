@@ -60,8 +60,8 @@ class OffersAdapter(
                 offerCategory.text = offer.category.ifBlank { "Uncategorized" }
 
                 Glide.with(context)
-                    .load(offer.imageUrl.ifBlank { null })
-                    .placeholder(R.drawable.ic_rentable_house)
+                    .load(offer.imageUrl.ifBlank { R.drawable.sample_apartment })
+                    .placeholder(R.drawable.sample_apartment)
                     .into(offerImage)
 
                 // === FAVORIS ===

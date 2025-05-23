@@ -53,10 +53,10 @@ class HomeFragment : Fragment() {
                     val latitude = snapshot.child("latitude").getValue(Double::class.java)
                     val longitude = snapshot.child("longitude").getValue(Double::class.java)
                     if (!firstName.isNullOrEmpty()) {
-                        binding.welcomingText.text = "Good Morning $firstName,"
+                        binding.welcomingText.text = "Bonjour $firstName,"
                         //binding.userLocation.text = ""
                     } else {
-                        binding.welcomingText.text = "Good Morning,"
+                        binding.welcomingText.text = "Bonjour,"
                         //binding.userLocation.text = "Los Angeles, CA"
                     }
                     if (latitude != null && longitude != null) {

@@ -34,7 +34,8 @@ class MyOffersAdapter(
             binding.address.text = offer.description
 
             Glide.with(binding.imageApartment.context)
-                .load(offer.imageUrl.ifEmpty { R.drawable.ic_rentable_house })
+                .load(offer.imageUrl.ifEmpty { R.drawable.sample_apartment })
+                .placeholder(R.drawable.sample_apartment)
                 .into(binding.imageApartment)
 
             val isOwner = offer.userId == FirebaseAuth.getInstance().currentUser?.uid

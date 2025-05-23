@@ -16,9 +16,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Post New Offer"
+            android:text="Publier une nouvelle annonce"
             android:textColor="@color/primary"
-            android:textSize="28sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:fontFamily="@font/poppinssemibold"
             android:layout_gravity="center_horizontal"
@@ -34,7 +34,7 @@
             style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title">
+            android:hint="Titre">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/titleEditText"
@@ -63,7 +63,7 @@
             style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Price (MAD)"
+            android:hint="Prix (MAD)"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -77,7 +77,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="City"
+            android:text="Ville"
             android:textColor="@android:color/black"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppinsmedium" />
@@ -91,7 +91,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Category"
+            android:text="Catégorie"
             android:textColor="@android:color/black"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppinsmedium" />
@@ -108,7 +108,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload House Image"
+            android:text="Télécharger une image"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/poppinsmedium"
             android:textColor="@android:color/black" />
@@ -127,7 +127,7 @@
             style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Number of Bedrooms"
+            android:hint="Nombre de chambres"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -142,7 +142,7 @@
             style="@style/Widget.ColoColo.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Number of Toilets"
+            android:hint="Nombre de salles de bain"
             android:layout_marginTop="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -173,7 +173,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="32dp"
-            android:text="Post Offer"
+            android:text="Publier l’annonce"
             android:textSize="16sp"
             android:textColor="@android:color/white"
             android:fontFamily="@font/poppinsmedium"

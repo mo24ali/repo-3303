@@ -65,7 +65,7 @@ class DetailsArticleActivity : AppCompatActivity() {
             .into(apartmentImage)
 
         prixText.text = "${offer.price.toInt()} DH"
-        bookNowBtn.text = "Make a Bid"
+        bookNowBtn.text = "Faire une proposition"
         adressLocation.text = offer.location?.address ?: "Adresse inconnue"
         descriptionText.text = offer.description
         categorie.text = offer.category

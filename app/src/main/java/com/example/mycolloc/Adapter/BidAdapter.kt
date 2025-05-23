@@ -64,7 +64,7 @@ class BidAdapter(private val bidList: List<Bid>) :
                 holder.binding.bidStatus.setBackgroundResource(R.drawable.status_pending_bg)
             }
         }
-        holder.binding.ownerRole.text = "Colocation Owner"
+        holder.binding.ownerRole.text = "Propriétaire de la colocation"
 
         Glide.with(context)
             .load(R.drawable.sample_avatar)

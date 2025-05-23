@@ -55,7 +55,7 @@ class PostOfferActivity : AppCompatActivity() {
         postOfferButton = findViewById(R.id.postOfferButton)
         typeEstateSpinner = findViewById(R.id.typeestate)
 
-        val estateTypes = listOf("Apartment", "Villa", "House", "Studio")
+        val estateTypes = listOf("Appartement", "Villa", "Maison", "Studio")
         typeEstateSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, estateTypes)
 
         val cities = listOf("Agadir", "Al Hoce\u00efma", "Azilal", "Beni Mellal", "Ben Guerir", "Berkane", "Berrechid", "Boujdour", "Boulemane", "Casablanca", "Chefchaouen", "Chichaoua", "Dakhla", "Driouch", "El Hajeb", "El Jadida", "El Kelaa des Sraghna", "Errachidia", "Essaouira", "F\u00e8s", "Figuig", "Guelmim", "Guercif", "Ifrane", "Jerada", "K\u00e9nitra", "Khemisset", "Khenifra", "Khouribga", "La\u00e2youne", "Larache", "Marrakech", "Mekn\u00e8s", "Midelt", "Mohammedia", "Nador", "Ouarzazate", "Oued Zem", "Oujda", "Rabat", "Safi", "Sal\u00e9", "Sefrou", "Settat", "Sidi Bennour", "Sidi Ifni", "Sidi Kacem", "Sidi Slimane", "Skhirat", "Tanger", "Taounate", "Taourirt", "Tarfaya", "Taza", "T\u00e9mara", "T\u00e9touan", "Tinghir", "Tiznit", "Youssoufia", "Zagora")

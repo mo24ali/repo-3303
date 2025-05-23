@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.mycolloc.Adapter.MyOffersAdapter
 import com.example.mycolloc.R
 import com.example.mycolloc.databinding.ActivityMyOfffersBinding
@@ -31,9 +30,7 @@ class MyOfffersActivity : AppCompatActivity() {
         adapter = MyOffersAdapter(
             onMenuClick = { offer, anchor -> showPopupMenu(offer, anchor) },
             onEditClick = { offer ->
-                val intent = Intent(this, EditOfferActivity::class.java)
-                intent.putExtra("offer", offer) // Serializable
-                startActivity(intent)
+                launchEditActivity(offer)
             },
             onDeleteClick = { offer ->
                 confirmDeleteOffer(offer)
@@ -73,6 +70,16 @@ class MyOfffersActivity : AppCompatActivity() {
             })
     }
 
+    private fun launchEditActivity(offer: Offer) {
+        if (offer.id.isNullOrBlank()) {
+            Toast.makeText(this, "Offre invalide : ID manquant", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val intent = Intent(this, EditOfferActivity::class.java)
+        intent.putExtra("offerId", offer.id)
+        startActivity(intent)
+    }
+
     private fun confirmDeleteOffer(offer: Offer) {
         AlertDialog.Builder(this)
             .setTitle("Supprimer l'offre")
@@ -83,6 +90,9 @@ class MyOfffersActivity : AppCompatActivity() {
                     .removeValue()
                     .addOnSuccessListener {
                         Toast.makeText(this, "Offre supprimée", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Erreur suppression : ${it.message}", Toast.LENGTH_SHORT).show()
                     }
             }
             .setNegativeButton("Annuler", null)
@@ -96,9 +106,7 @@ class MyOfffersActivity : AppCompatActivity() {
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_edit -> {
-                    val intent = Intent(this, EditOfferActivity::class.java)
-                    intent.putExtra("offerID", offer.id)
-                    startActivity(intent)
+                    launchEditActivity(offer)
                     true
                 }
                 R.id.action_delete -> {
@@ -106,6 +114,10 @@ class MyOfffersActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_details -> {
+                    if (offer.id.isNullOrBlank()) {
+                        Toast.makeText(this, "Offre invalide", Toast.LENGTH_SHORT).show()
+                        return@setOnMenuItemClickListener false
+                    }
                     val intent = Intent(this, activity_my_bids::class.java)
                     intent.putExtra("offerId", offer.id)
                     startActivity(intent)

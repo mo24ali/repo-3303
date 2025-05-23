@@ -27,11 +27,9 @@
         <activity
             android:name=".ui.profile.MyOfffersActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.profile.activity_my_bids"
             android:exported="false" />
-
         <activity
             android:name=".ui.post.activity_user_bids"
             android:exported="false" />

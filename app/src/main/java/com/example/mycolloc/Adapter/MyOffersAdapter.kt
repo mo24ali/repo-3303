@@ -11,6 +11,7 @@ import com.example.mycolloc.R
 import com.example.mycolloc.databinding.ItemApartmentCardBinding
 import com.example.mycolloc.model.Offer
 import com.example.mycolloc.ui.post.EditOfferActivity
+import com.example.mycolloc.ui.post.activity_user_bids
 import com.google.firebase.auth.FirebaseAuth
 
 class MyOffersAdapter(
@@ -55,22 +56,26 @@ class MyOffersAdapter(
         return MyViewHolder(binding)
     }
 
+    override fun getItemCount() = items.size
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(items[position])
+    }
+
     private fun showPopupMenu(anchor: View, offer: Offer) {
         val popup = PopupMenu(anchor.context, anchor)
         popup.menuInflater.inflate(R.menu.menu_offer_actions, popup.menu)
+
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.action_edit -> {
                     val intent = Intent(anchor.context, EditOfferActivity::class.java)
-                    intent.putExtra("offerID", offer.id)
+                    intent.putExtra("offerId", offer.id) // ✅ CORRECTED KEY
                     anchor.context.startActivity(intent)
-
                     true
                 }
                 R.id.action_delete -> {
-                    // ✅ Afficher une confirmation avant suppression
-                    val context = anchor.context
-                    androidx.appcompat.app.AlertDialog.Builder(context)
+                    androidx.appcompat.app.AlertDialog.Builder(anchor.context)
                         .setTitle("Supprimer l'offre")
                         .setMessage("Êtes-vous sûr de vouloir supprimer cette offre ?")
                         .setPositiveButton("Supprimer") { _, _ ->
@@ -80,24 +85,16 @@ class MyOffersAdapter(
                         .show()
                     true
                 }
-
                 R.id.action_details -> {
-                    // ✅ Aller vers UserBidsActivity avec offerId
-                    val intent = Intent(anchor.context, com.example.mycolloc.ui.post.activity_user_bids::class.java)
-                    intent.putExtra("offerId", offer.id)
+                    val intent = Intent(anchor.context, activity_user_bids::class.java)
+                    intent.putExtra("offerId", offer.id) // ✅ Ensure consistent key
                     anchor.context.startActivity(intent)
                     true
                 }
                 else -> false
             }
         }
-        popup.show()
-    }
-//svp je veux que R.id.action_delete faire show une Alert before deleting the offer from from firebase
-// et je veux que R.id.action_details go to activity_user_bids and sending offer ID  because we nedd this to show all related bbids to thi offer
-    override fun getItemCount() = items.size
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(items[position])
+        popup.show()
     }
 }

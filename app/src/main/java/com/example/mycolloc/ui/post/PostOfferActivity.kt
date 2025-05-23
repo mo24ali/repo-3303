@@ -102,8 +102,8 @@ class PostOfferActivity : AppCompatActivity() {
         val title = titleEditText.text.toString()
         val description = descriptionEditText.text.toString()
         val price = priceEditText.text.toString().toDoubleOrNull() ?: 0.0
-        val bedrooms = bedroomEditText.text.toString().toIntOrNull()
-        val bathrooms = toiletEditText.text.toString().toIntOrNull()
+        val bedrooms = bedroomEditText.text.toString().toIntOrNull() ?: 0
+        val bathrooms = toiletEditText.text.toString().toIntOrNull() ?: 0
         val surface = surfaceEditText.text.toString()
 
         if (title.isBlank() || description.isBlank() || price <= 0.0) {

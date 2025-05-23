@@ -116,7 +116,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    private fun fetchOffers() {
+    //    private fun fetchOffers() {
 //        databaseRef.addValueEventListener(object : ValueEventListener {
 //            override fun onDataChange(snapshot: DataSnapshot) {
 //                val offerList = mutableListOf<Offer>()
@@ -134,63 +134,63 @@ class HomeFragment : Fragment() {
 //            }
 //        })
 //    }
-private fun fetchOffers() {
-    databaseRef.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val offerList = mutableListOf<Offer>()
-            for (offerSnap in snapshot.children) {
-                try {
-                    val id = offerSnap.child("id").getValue(String::class.java) ?: ""
-                    val userId = offerSnap.child("userId").getValue(String::class.java) ?: ""
-                    val title = offerSnap.child("title").getValue(String::class.java) ?: ""
-                    val description = offerSnap.child("description").getValue(String::class.java) ?: ""
-                    val price = offerSnap.child("price").getValue(Double::class.java) ?: 0.0
-                    val category = offerSnap.child("category").getValue(String::class.java) ?: ""
-                    val imageUrl = offerSnap.child("imageUrl").getValue(String::class.java) ?: ""
-                    val isActive = offerSnap.child("isActive").getValue(Boolean::class.java) ?: true
-                    val createdAt = offerSnap.child("createdAt").getValue(Long::class.java) ?: 0L
-                    val updatedAt = offerSnap.child("updatedAt").getValue(Long::class.java) ?: 0L
+    private fun fetchOffers() {
+        databaseRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val offerList = mutableListOf<Offer>()
+                for (offerSnap in snapshot.children) {
+                    try {
+                        val id = offerSnap.child("id").getValue(String::class.java) ?: ""
+                        val userId = offerSnap.child("userId").getValue(String::class.java) ?: ""
+                        val title = offerSnap.child("title").getValue(String::class.java) ?: ""
+                        val description = offerSnap.child("description").getValue(String::class.java) ?: ""
+                        val price = offerSnap.child("price").getValue(Double::class.java) ?: 0.0
+                        val category = offerSnap.child("category").getValue(String::class.java) ?: ""
+                        val imageUrl = offerSnap.child("imageUrl").getValue(String::class.java) ?: ""
+                        val isActive = offerSnap.child("isActive").getValue(Boolean::class.java) ?: true
+                        val createdAt = offerSnap.child("createdAt").getValue(Long::class.java) ?: 0L
+                        val updatedAt = offerSnap.child("updatedAt").getValue(Long::class.java) ?: 0L
 
-                    // Location manuelle
-                    val locationSnap = offerSnap.child("location")
-                    val city = locationSnap.child("city").getValue(String::class.java)
-                    val address = locationSnap.child("address").getValue(String::class.java)
-                    val latitude = locationSnap.child("latitude").getValue(Double::class.java) ?: 0.0
-                    val longitude = locationSnap.child("longitude").getValue(Double::class.java) ?: 0.0
-                    val location = com.example.mycolloc.data.local.Location(city, address, latitude, longitude)
+                        // Location manuelle
+                        val locationSnap = offerSnap.child("location")
+                        val city = locationSnap.child("city").getValue(String::class.java)
+                        val address = locationSnap.child("address").getValue(String::class.java)
+                        val latitude = locationSnap.child("latitude").getValue(Double::class.java) ?: 0.0
+                        val longitude = locationSnap.child("longitude").getValue(Double::class.java) ?: 0.0
+                        val location = com.example.mycolloc.data.local.Location(city, address, latitude, longitude)
 
-                    // Images (liste)
-                    val images = offerSnap.child("images").children.mapNotNull { it.getValue(String::class.java) }
+                        // Images (liste)
+                        val images = offerSnap.child("images").children.mapNotNull { it.getValue(String::class.java) }
 
-                    val offer = Offer(
-                        id = id,
-                        userId = userId,
-                        title = title,
-                        description = description,
-                        price = price,
-                        category = category,
-                        imageUrl = imageUrl,
-                        images = images,
-                        latitude = latitude,
-                        longitude = longitude,
-                        isActive = isActive,
-                        location = location,
-                        createdAt = createdAt,
-                        updatedAt = updatedAt
-                    )
-                    offerList.add(offer)
-                } catch (e: Exception) {
-                    Log.e("FirebaseParseError", "Erreur offre ${offerSnap.key}", e)
+                        val offer = Offer(
+                            id = id,
+                            userId = userId,
+                            title = title,
+                            description = description,
+                            price = price,
+                            category = category,
+                            imageUrl = imageUrl,
+                            images = images,
+                            latitude = latitude,
+                            longitude = longitude,
+                            isActive = isActive,
+                            location = location,
+                            createdAt = createdAt,
+                            updatedAt = updatedAt
+                        )
+                        offerList.add(offer)
+                    } catch (e: Exception) {
+                        Log.e("FirebaseParseError", "Erreur offre ${offerSnap.key}", e)
+                    }
                 }
+                offersAdapter.submitList(offerList)
             }
-            offersAdapter.submitList(offerList)
-        }
 
-        override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(requireContext(), "Erreur Firebase : ${error.message}", Toast.LENGTH_LONG).show()
-        }
-    })
-}
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Erreur Firebase : ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
 
     private fun setupSearchBox() {
         binding.searchEditText.addTextChangedListener(object : TextWatcher {

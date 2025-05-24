@@ -37,7 +37,7 @@ class OfferBidsAdapter(
         holder.binding.bidTime.text = getTimeAgo(bid.timestamp)
 
         Glide.with(context)
-            .load(R.drawable.sample_avatar)
+            .load(R.drawable.acount)
             .into(holder.binding.userAvatar)
 
         // 🔁 Récupère le nom complet de l'utilisateur

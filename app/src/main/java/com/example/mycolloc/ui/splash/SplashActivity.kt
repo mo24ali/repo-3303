@@ -21,10 +21,8 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val currentUser = auth.currentUser
             if (currentUser != null) {
-                // ✅ Utilisateur déjà connecté → vers MainActivity
                 startActivity(Intent(this, HomeActivity::class.java))
             } else {
-                // ❌ Pas connecté → vers LoginActivity
                 startActivity(Intent(this, LoginActivity::class.java))
             }
             finish()

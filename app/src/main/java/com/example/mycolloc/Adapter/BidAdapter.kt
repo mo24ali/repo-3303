@@ -67,7 +67,7 @@ class BidAdapter(private val bidList: List<Bid>) :
         holder.binding.ownerRole.text = "Propriétaire de la colocation"
 
         Glide.with(context)
-            .load(R.drawable.sample_avatar)
+            .load(R.drawable.acount)
             .into(holder.binding.ownerAvatar)
 
         fetchOwnerName(bid.userId) { fullName ->

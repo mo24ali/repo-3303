@@ -60,7 +60,7 @@ class DetailsArticleActivity : AppCompatActivity() {
 
     private fun bindOfferToUI(offer: Offer) = with(binding) {
         Glide.with(this@DetailsArticleActivity)
-            .load(offer.imageUrl.ifEmpty { R.drawable.ic_rentable_house })
+            .load(offer.imageUrl.ifEmpty { R.drawable.sample_apartment })
             .placeholder(R.drawable.sample_apartment)
             .into(apartmentImage)
 

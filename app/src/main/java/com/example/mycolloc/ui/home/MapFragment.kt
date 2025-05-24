@@ -1,6 +1,7 @@
 package com.example.mycolloc.ui.home
 
 import android.Manifest
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
@@ -9,9 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.mycolloc.R
+import com.example.mycolloc.ui.details.DetailsArticleActivity
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -138,14 +141,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         val offerLatLng = LatLng(lat, lon)
                         val distanceText = calculateDistanceToUser(lat, lon)
 
-                        mMap.addMarker(
+                        val marker = mMap.addMarker(
                             MarkerOptions()
                                 .position(offerLatLng)
                                 .title(title)
                                 .snippet("${price.toInt()} MAD - $distanceText")
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                         )
+
+                        // 🎯 Associer l'ID de l'offre au marqueur
+                        marker?.tag = child.key  // child.key est l'ID Firebase (offerId)
                     }
+                }
+
+                // 🎯 Gérer le clic sur les marqueurs pour afficher le pop-up ou aller aux détails
+                mMap.setOnMarkerClickListener { marker ->
+                    val offerId = marker.tag as? String
+                    if (offerId != null) {
+                        showPopupOrDetails(marker.title ?: "", offerId)
+                    } else {
+                        Toast.makeText(requireContext(), "Erreur : ID de l'offre manquant", Toast.LENGTH_SHORT).show()
+                    }
+                    true
                 }
             }
 
@@ -154,6 +171,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         })
     }
+    private fun showPopupOrDetails(title: String, offerId: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage("Souhaitez-vous voir les détails de cette offre ?")
+            .setPositiveButton("Voir détails") { _, _ ->
+                val intent = Intent(requireContext(), DetailsArticleActivity::class.java)
+                intent.putExtra("extra_offer_id", offerId)
+                startActivity(intent)
+            }
+            .setNegativeButton("Annuler", null)
+            .show()
+    }
+
+
 
     private fun calculateDistanceToUser(lat: Double, lon: Double): String {
         userLocation?.let { userLoc ->

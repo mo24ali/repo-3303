@@ -41,7 +41,7 @@ class OffersAdapter(
             binding.offerLocation.text = offer.title
 
             Glide.with(context)
-                .load(offer.imageUrl.ifEmpty { R.drawable.ic_rentable_house })
+                .load(offer.imageUrl.ifEmpty { R.drawable.sample_apartment })
                 .into(binding.offerImage)
 
             // === ❤️ GESTION FAVORIS (hors mode "mes offres") ===
